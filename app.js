@@ -22,11 +22,10 @@ const connection = mysql.createConnection({
     // user: 'root',
     // password: '',
     // database: 'c237_supermarketdb'
-    host: 'qwkeyw.h.filess.io',
-    port: 3307,
-    user: 'C237Supermarket_cowdeepnor',
-    password: '0705fdfb0eee225c3ef360cba0b7183c37167bf4',
-    database: 'C237Supermarket_cowdeepnor'
+    host: 'localhost',
+    user: 'root',
+    password: '',
+    database: 'travel_db'
   });
 
 connection.connect((err) => {
