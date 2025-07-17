@@ -100,9 +100,9 @@ app.get('/',  (req, res) => {
 
 app.get('/inventory', checkAuthenticated, checkAdmin, (req, res) => {
     // Fetch data from MySQL
-    connection.query('SELECT * FROM products', (error, results) => {
+    connection.query('SELECT * FROM destination', (error, results) => {
       if (error) throw error;
-      res.render('inventory', { products: results, user: req.session.user });
+      res.render('inventory', { destination: results, user: req.session.user });
     });
 });
 
@@ -162,9 +162,9 @@ app.post('/login', (req, res) => {
 
 app.get('/shopping', checkAuthenticated, (req, res) => {
     // Fetch data from MySQL
-    connection.query('SELECT * FROM products', (error, results) => {
+    connection.query('SELECT * FROM destination', (error, results) => {
         if (error) throw error;
-        res.render('shopping', { user: req.session.user, products: results });
+        res.render('shopping', { user: req.session.user, destination: results });
       });
 });
 
@@ -172,7 +172,7 @@ app.post('/add-to-cart/:id', checkAuthenticated, (req, res) => {
     const productId = parseInt(req.params.id);
     const quantity = parseInt(req.body.quantity) || 1;
 
-    connection.query('SELECT * FROM products WHERE productId = ?', [productId], (error, results) => {
+    connection.query('SELECT * FROM destination WHERE productId = ?', [productId], (error, results) => {
         if (error) throw error;
 
         if (results.length > 0) {
@@ -189,11 +189,11 @@ app.post('/add-to-cart/:id', checkAuthenticated, (req, res) => {
                 existingItem.quantity += quantity;
             } else {
                 req.session.cart.push({
-                    productId: product.productId,
-                    productName: product.productName,
-                    price: product.price,
+                    productId: destination.productId,
+                    productName: destination.productName,
+                    price: destination.price,
                     quantity: quantity,
-                    image: product.image
+                    image: destination.image
                 });
             }
 
@@ -214,18 +214,18 @@ app.get('/logout', (req, res) => {
     res.redirect('/');
 });
 
-app.get('/product/:id', checkAuthenticated, (req, res) => {
+app.get('/destination/:id', checkAuthenticated, (req, res) => {
   // Extract the product ID from the request parameters
   const productId = req.params.id;
 
   // Fetch data from MySQL based on the product ID
-  connection.query('SELECT * FROM products WHERE productId = ?', [productId], (error, results) => {
+  connection.query('SELECT * FROM destination WHERE productId = ?', [productId], (error, results) => {
       if (error) throw error;
 
       // Check if any product with the given ID was found
       if (results.length > 0) {
           // Render HTML page with the product data
-          res.render('product', { product: results[0], user: req.session.user  });
+          res.render('product', { destination: results[0], user: req.session.user  });
       } else {
           // If no product with the given ID was found, render a 404 page or handle it accordingly
           res.status(404).send('Product not found');
@@ -257,7 +257,7 @@ app.post('/addDestination', upload.single('image'),  (req, res) => {
 
 
 
-    const sql = 'INSERT INTO products (productName, quantity, price, image) VALUES (?, ?, ?, ?)';
+    const sql = 'INSERT INTO destination (productName, quantity, price, image) VALUES (?, ?, ?, ?)';
     // Insert the new product into the database
     connection.query(sql , [name, quantity, price, image], (error, results) => {
         if (error) {
@@ -283,7 +283,7 @@ app.post('/addProduct', upload.single('image'),  (req, res) => {
 
 
 
-    const sql = 'INSERT INTO products (productName, quantity, price, image) VALUES (?, ?, ?, ?)';
+    const sql = 'INSERT INTO destination (productName, quantity, price, image) VALUES (?, ?, ?, ?)';
     // Insert the new product into the database
     connection.query(sql , [name, quantity, price, image], (error, results) => {
         if (error) {
@@ -309,7 +309,7 @@ app.post('/addProduct', upload.single('image'),  (req, res) => {
 
 
 
-    const sql = 'INSERT INTO products (productName, quantity, price, image) VALUES (?, ?, ?, ?)';
+    const sql = 'INSERT INTO destination (productName, quantity, price, image) VALUES (?, ?, ?, ?)';
     // Insert the new product into the database
     connection.query(sql , [name, quantity, price, image], (error, results) => {
         if (error) {
@@ -325,7 +325,7 @@ app.post('/addProduct', upload.single('image'),  (req, res) => {
 
 app.get('/updateProduct/:id',checkAuthenticated, checkAdmin, (req,res) => {
     const productId = req.params.id;
-    const sql = 'SELECT * FROM products WHERE productId = ?';
+    const sql = 'SELECT * FROM destination WHERE productId = ?';
 
     // Fetch data from MySQL based on the product ID
     connection.query(sql , [productId], (error, results) => {
@@ -334,7 +334,7 @@ app.get('/updateProduct/:id',checkAuthenticated, checkAdmin, (req,res) => {
         // Check if any product with the given ID was found
         if (results.length > 0) {
             // Render HTML page with the product data
-            res.render('updateProduct', { product: results[0] });
+            res.render('updateProduct', { destination: results[0] });
         } else {
             // If no product with the given ID was found, render a 404 page or handle it accordingly
             res.status(404).send('Product not found');
@@ -351,7 +351,7 @@ app.post('/updateProduct/:id', upload.single('image'), (req, res) => {
         image = req.file.filename; // set image to be new image filename
     } 
 
-    const sql = 'UPDATE products SET productName = ? , quantity = ?, price = ?, image =? WHERE productId = ?';
+    const sql = 'UPDATE destination SET productName = ? , quantity = ?, price = ?, image =? WHERE productId = ?';
     // Insert the new product into the database
     connection.query(sql, [name, quantity, price, image, productId], (error, results) => {
         if (error) {
@@ -368,7 +368,7 @@ app.post('/updateProduct/:id', upload.single('image'), (req, res) => {
 app.get('/deleteProduct/:id', (req, res) => {
     const productId = req.params.id;
 
-    connection.query('DELETE FROM products WHERE productId = ?', [productId], (error, results) => {
+    connection.query('DELETE FROM destination WHERE productId = ?', [productId], (error, results) => {
         if (error) {
             // Handle any error that occurs during the database operation
             console.error("Error deleting product:", error);
