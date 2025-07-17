@@ -22,7 +22,7 @@ const connection = mysql.createConnection({
     // user: 'root',
     // password: '',
     // database: 'c237_supermarketdb'
-    host: 'localhost',
+    host: 'zxw6ws.h.filess.io',
     user: 'root',
     password: '',
     database: 'travel_db'
