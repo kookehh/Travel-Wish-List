@@ -169,28 +169,28 @@ app.get('/shopping', checkAuthenticated, (req, res) => {
 });
 
 app.post('/add-to-cart/:id', checkAuthenticated, (req, res) => {
-    const productId = parseInt(req.params.id);
+    const destinationId = parseInt(req.params.id);
     const quantity = parseInt(req.body.quantity) || 1;
 
-    connection.query('SELECT * FROM destination WHERE productId = ?', [productId], (error, results) => {
+    connection.query('SELECT * FROM destination WHERE destinationId = ?', [destinationId], (error, results) => {
         if (error) throw error;
 
         if (results.length > 0) {
-            const product = results[0];
+            const destination = results[0];
 
             // Initialize cart in session if not exists
             if (!req.session.cart) {
                 req.session.cart = [];
             }
 
-            // Check if product already in cart
-            const existingItem = req.session.cart.find(item => item.productId === productId);
+            // Check if destination already in cart
+            const existingItem = req.session.cart.find(item => item.destinationId === destinationId);
             if (existingItem) {
                 existingItem.quantity += quantity;
             } else {
                 req.session.cart.push({
-                    productId: destination.productId,
-                    productName: destination.productName,
+                    destinationId: destination.destinationId,
+                    destinationName: destination.destinationName,
                     price: destination.price,
                     quantity: quantity,
                     image: destination.image
@@ -199,7 +199,7 @@ app.post('/add-to-cart/:id', checkAuthenticated, (req, res) => {
 
             res.redirect('/cart');
         } else {
-            res.status(404).send("Product not found");
+            res.status(404).send("Destination not found");
         }
     });
 });
@@ -215,20 +215,20 @@ app.get('/logout', (req, res) => {
 });
 
 app.get('/destination/:id', checkAuthenticated, (req, res) => {
-  // Extract the product ID from the request parameters
-  const productId = req.params.id;
+  // Extract the destination ID from the request parameters
+  const destinationId = req.params.id;
 
-  // Fetch data from MySQL based on the product ID
-  connection.query('SELECT * FROM destination WHERE productId = ?', [productId], (error, results) => {
+  // Fetch data from MySQL based on the destination ID
+  connection.query('SELECT * FROM destination WHERE destinationId = ?', [destinationId], (error, results) => {
       if (error) throw error;
 
-      // Check if any product with the given ID was found
+      // Check if any destination with the given ID was found
       if (results.length > 0) {
-          // Render HTML page with the product data
-          res.render('product', { destination: results[0], user: req.session.user  });
+          // Render HTML page with the destination data
+          res.render('destination', { destination: results[0], user: req.session.user  });
       } else {
-          // If no product with the given ID was found, render a 404 page or handle it accordingly
-          res.status(404).send('Product not found');
+          // If no destination with the given ID was found, render a 404 page or handle it accordingly
+          res.status(404).send('destination not found');
       }
   });
 });
@@ -246,7 +246,7 @@ app.get('/addCity', checkAuthenticated, checkAdmin, (req, res) => {
 });
 
 app.post('/addDestination', upload.single('image'),  (req, res) => {
-    // Extract product data from the request body
+    // Extract destination data from the request body
     const { name, quantity, price} = req.body;
     let image;
     if (req.file) {
@@ -257,13 +257,13 @@ app.post('/addDestination', upload.single('image'),  (req, res) => {
 
 
 
-    const sql = 'INSERT INTO destination (productName, quantity, price, image) VALUES (?, ?, ?, ?)';
-    // Insert the new product into the database
+    const sql = 'INSERT INTO destination (destinationName, quantity, price, image) VALUES (?, ?, ?, ?)';
+    // Insert the new destination into the database
     connection.query(sql , [name, quantity, price, image], (error, results) => {
         if (error) {
             // Handle any error that occurs during the database operation
-            console.error("Error adding product:", error);
-            res.status(500).send('Error adding product');
+            console.error("Error adding destination:", error);
+            res.status(500).send('Error adding destination');
         } else {
             // Send a success response
             res.redirect('/inventory');
@@ -271,8 +271,8 @@ app.post('/addDestination', upload.single('image'),  (req, res) => {
     });
 });
 
-app.post('/addProduct', upload.single('image'),  (req, res) => {
-    // Extract product data from the request body
+app.post('/addDestination', upload.single('image'),  (req, res) => {
+    // Extract destination data from the request body
     const { name, quantity, price} = req.body;
     let image;
     if (req.file) {
@@ -283,13 +283,13 @@ app.post('/addProduct', upload.single('image'),  (req, res) => {
 
 
 
-    const sql = 'INSERT INTO destination (productName, quantity, price, image) VALUES (?, ?, ?, ?)';
-    // Insert the new product into the database
+    const sql = 'INSERT INTO destination (destinationName, quantity, price, image) VALUES (?, ?, ?, ?)';
+    // Insert the new destination into the database
     connection.query(sql , [name, quantity, price, image], (error, results) => {
         if (error) {
             // Handle any error that occurs during the database operation
-            console.error("Error adding product:", error);
-            res.status(500).send('Error adding product');
+            console.error("Error adding destination:", error);
+            res.status(500).send('Error adding destination');
         } else {
             // Send a success response
             res.redirect('/inventory');
@@ -297,8 +297,8 @@ app.post('/addProduct', upload.single('image'),  (req, res) => {
     });
 });
 
-app.post('/addProduct', upload.single('image'),  (req, res) => {
-    // Extract product data from the request body
+app.post('/addDestination', upload.single('image'),  (req, res) => {
+    // Extract destination data from the request body
     const { name, quantity, price} = req.body;
     let image;
     if (req.file) {
@@ -309,13 +309,13 @@ app.post('/addProduct', upload.single('image'),  (req, res) => {
 
 
 
-    const sql = 'INSERT INTO destination (productName, quantity, price, image) VALUES (?, ?, ?, ?)';
-    // Insert the new product into the database
+    const sql = 'INSERT INTO destination (destinationName, quantity, price, image) VALUES (?, ?, ?, ?)';
+    // Insert the new destination into the database
     connection.query(sql , [name, quantity, price, image], (error, results) => {
         if (error) {
             // Handle any error that occurs during the database operation
-            console.error("Error adding product:", error);
-            res.status(500).send('Error adding product');
+            console.error("Error adding destination:", error);
+            res.status(500).send('Error adding destination');
         } else {
             // Send a success response
             res.redirect('/inventory');
@@ -323,41 +323,41 @@ app.post('/addProduct', upload.single('image'),  (req, res) => {
     });
 });
 
-app.get('/updateProduct/:id',checkAuthenticated, checkAdmin, (req,res) => {
-    const productId = req.params.id;
-    const sql = 'SELECT * FROM destination WHERE productId = ?';
+app.get('/updateDestination/:id',checkAuthenticated, checkAdmin, (req,res) => {
+    const destinationId = req.params.id;
+    const sql = 'SELECT * FROM destination WHERE destinationId = ?';
 
-    // Fetch data from MySQL based on the product ID
-    connection.query(sql , [productId], (error, results) => {
+    // Fetch data from MySQL based on the destination ID
+    connection.query(sql , [destinationId], (error, results) => {
         if (error) throw error;
 
-        // Check if any product with the given ID was found
+        // Check if any destination with the given ID was found
         if (results.length > 0) {
-            // Render HTML page with the product data
-            res.render('updateProduct', { destination: results[0] });
+            // Render HTML page with the destination data
+            res.render('updateDestination', { destination: results[0] });
         } else {
-            // If no product with the given ID was found, render a 404 page or handle it accordingly
-            res.status(404).send('Product not found');
+            // If no destination with the given ID was found, render a 404 page or handle it accordingly
+            res.status(404).send('Destination not found');
         }
     });
 });
 
-app.post('/updateProduct/:id', upload.single('image'), (req, res) => {
-    const productId = req.params.id;
-    // Extract product data from the request body
+app.post('/updateDestination/:id', upload.single('image'), (req, res) => {
+    const destinationId = req.params.id;
+    // Extract destination data from the request body
     const { name, quantity, price } = req.body;
     let image  = req.body.currentImage; //retrieve current image filename
     if (req.file) { //if new image is uploaded
         image = req.file.filename; // set image to be new image filename
     } 
 
-    const sql = 'UPDATE destination SET productName = ? , quantity = ?, price = ?, image =? WHERE productId = ?';
-    // Insert the new product into the database
-    connection.query(sql, [name, quantity, price, image, productId], (error, results) => {
+    const sql = 'UPDATE destination SET destinationName = ? , quantity = ?, price = ?, image =? WHERE destinationId = ?';
+    // Insert the new destination into the database
+    connection.query(sql, [name, quantity, price, image, destinationId], (error, results) => {
         if (error) {
             // Handle any error that occurs during the database operation
-            console.error("Error updating product:", error);
-            res.status(500).send('Error updating product');
+            console.error("Error updating destination:", error);
+            res.status(500).send('Error updating destination');
         } else {
             // Send a success response
             res.redirect('/inventory');
@@ -365,14 +365,14 @@ app.post('/updateProduct/:id', upload.single('image'), (req, res) => {
     });
 });
 
-app.get('/deleteProduct/:id', (req, res) => {
-    const productId = req.params.id;
+app.get('/deleteDestination/:id', (req, res) => {
+    const destinationId = req.params.id;
 
-    connection.query('DELETE FROM destination WHERE productId = ?', [productId], (error, results) => {
+    connection.query('DELETE FROM destination WHERE destinationId = ?', [destinationId], (error, results) => {
         if (error) {
             // Handle any error that occurs during the database operation
-            console.error("Error deleting product:", error);
-            res.status(500).send('Error deleting product');
+            console.error("Error deleting destination:", error);
+            res.status(500).send('Error deleting destination');
         } else {
             // Send a success response
             res.redirect('/inventory');
