@@ -114,8 +114,8 @@ app.post('/register', validateRegistration, (req, res) => {
 
     const { username, email, password, confirmpassword, contact, accounttype } = req.body;
 
-    const sql = 'INSERT INTO users (username, email, password, confirmpassword, contact, accounttype) VALUES (?, ?, SHA1(?), ?, ?, ?)';
-    connection.query(sql, [username, email, password, confirmpassword, contact, accountype], (err, result) => {
+    const sql = 'INSERT INTO users (username, email, password, confirmpassword, contact, accounttype) VALUES (?, ?, SHA1(?), SHA1(?), ?, ?)';
+    connection.query(sql, [username, email, password, confirmpassword, contact, accounttype], (err, result) => {
         if (err) {
             throw err;
         }
