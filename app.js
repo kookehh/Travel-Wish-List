@@ -244,7 +244,7 @@ app.get('/addCity', checkAuthenticated, checkAdmin, (req, res) => {
     res.render('addCity', {user: req.session.user } ); 
 });
 
-app.post('/addProduct', upload.single('image'),  (req, res) => {
+app.post('/addDestination', upload.single('image'),  (req, res) => {
     // Extract product data from the request body
     const { name, quantity, price} = req.body;
     let image;
