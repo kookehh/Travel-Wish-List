@@ -23,7 +23,7 @@
                   <a class="nav-link" href="/inventory">Inventory</a>
                 </li> 
                 <li class="nav-item">
-                  <a class="nav-link" href="/addDestination">Add new product</a>
+                  <a class="nav-link" href="/addDestination">Add new destination</a>
                 </li> 
               <% } %>
               <li class="nav-item">
@@ -41,8 +41,8 @@
         <br>
         <% if (product) { %> <!-- Check if product data exists -->
             <div>
-                <p><b>Destination Name:</b><br> <%= destination.DestinationName %></p>
-                <p><b>Destination Image:</b><br> <img src = "../images/<%= product.image %>" width="20%"></p>
+                <p><b>Destination Name:</b><br> <%= destination.destinationName %></p>
+                <p><b>Destination Image:</b><br> <img src = "../images/<%= destination.image %>" width="20%"></p>
                 <p><b>Product Quantity:</b><br> <%= product.quantity %></p>
                 <p><b>Price:</b><br> $<%= product.price.toFixed(2) %></p> 
             </div>
