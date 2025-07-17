@@ -23,9 +23,10 @@ const connection = mysql.createConnection({
     // password: '',
     // database: 'c237_supermarketdb'
     host: 'zxw6ws.h.filess.io',
-    user: 'root',
-    password: '',
-    database: 'travel_db'
+    port: 3307
+    user: 'C328TravelWishList_jetbackbuy',
+    password: '427766ceea97ead6c7975d85ac90ea584f82a776',
+    database: 'C328TravelWishList_jetbackbuy'
   });
 
 connection.connect((err) => {
