@@ -1,4 +1,4 @@
-<!-- product.ejs -->
+<!-- destination.ejs -->
 
 <!DOCTYPE html>
 <html lang="en">
@@ -37,14 +37,14 @@
     <div class="container">
         <p>Welcome, <%= user.username %> (<%= user.role %>)</p>
         <br>
-        <div class="text-center"><h2>Product Details</h2></div>
+        <div class="text-center"><h2>Destination Details</h2></div>
         <br>
-        <% if (product) { %> <!-- Check if product data exists -->
+        <% if (destination) { %> <!-- Check if destination data exists -->
             <div>
                 <p><b>Destination Name:</b><br> <%= destination.destinationName %></p>
                 <p><b>Destination Image:</b><br> <img src = "../images/<%= destination.image %>" width="20%"></p>
-                <p><b>Product Quantity:</b><br> <%= product.quantity %></p>
-                <p><b>Price:</b><br> $<%= product.price.toFixed(2) %></p> 
+                <p><b>Destination Quantity:</b><br> <%= destination.quantity %></p>
+                <p><b>Price:</b><br> $<%= destination.price.toFixed(2) %></p> 
             </div>
         <% } else { %>
             <p>No destination found.</p>
