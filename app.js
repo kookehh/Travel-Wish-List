@@ -232,8 +232,16 @@ app.get('/product/:id', checkAuthenticated, (req, res) => {
   });
 });
 
-app.get('/addProduct', checkAuthenticated, checkAdmin, (req, res) => {
-    res.render('addProduct', {user: req.session.user } ); 
+app.get('/addDestination', checkAuthenticated, checkAdmin, (req, res) => {
+    res.render('addDestination', {user: req.session.user } ); 
+});
+
+app.get('/addCountry', checkAuthenticated, checkAdmin, (req, res) => {
+    res.render('addCountry', {user: req.session.user } ); 
+});
+
+app.get('/addCity', checkAuthenticated, checkAdmin, (req, res) => {
+    res.render('addCity', {user: req.session.user } ); 
 });
 
 app.post('/addProduct', upload.single('image'),  (req, res) => {
@@ -245,6 +253,60 @@ app.post('/addProduct', upload.single('image'),  (req, res) => {
     } else {
         image = null;
     }
+
+
+
+    const sql = 'INSERT INTO products (productName, quantity, price, image) VALUES (?, ?, ?, ?)';
+    // Insert the new product into the database
+    connection.query(sql , [name, quantity, price, image], (error, results) => {
+        if (error) {
+            // Handle any error that occurs during the database operation
+            console.error("Error adding product:", error);
+            res.status(500).send('Error adding product');
+        } else {
+            // Send a success response
+            res.redirect('/inventory');
+        }
+    });
+});
+
+app.post('/addProduct', upload.single('image'),  (req, res) => {
+    // Extract product data from the request body
+    const { name, quantity, price} = req.body;
+    let image;
+    if (req.file) {
+        image = req.file.filename; // Save only the filename
+    } else {
+        image = null;
+    }
+
+
+
+    const sql = 'INSERT INTO products (productName, quantity, price, image) VALUES (?, ?, ?, ?)';
+    // Insert the new product into the database
+    connection.query(sql , [name, quantity, price, image], (error, results) => {
+        if (error) {
+            // Handle any error that occurs during the database operation
+            console.error("Error adding product:", error);
+            res.status(500).send('Error adding product');
+        } else {
+            // Send a success response
+            res.redirect('/inventory');
+        }
+    });
+});
+
+app.post('/addProduct', upload.single('image'),  (req, res) => {
+    // Extract product data from the request body
+    const { name, quantity, price} = req.body;
+    let image;
+    if (req.file) {
+        image = req.file.filename; // Save only the filename
+    } else {
+        image = null;
+    }
+
+
 
     const sql = 'INSERT INTO products (productName, quantity, price, image) VALUES (?, ?, ?, ?)';
     // Insert the new product into the database
