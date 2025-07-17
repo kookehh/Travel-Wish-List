@@ -79,9 +79,9 @@ const checkAdmin = (req, res, next) => {
 
 // Middleware for form validation
 const validateRegistration = (req, res, next) => {
-    const { username, email, password, address, contact, role } = req.body;
+    const { username, email, password, confirmpassword, contact, accounttype } = req.body;
 
-    if (!username || !email || !password || !address || !contact || !role) {
+    if (!username || !email || !password || !confirmpassword || !contact || !accounttype) {
         return res.status(400).send('All fields are required.');
     }
     
@@ -112,10 +112,10 @@ app.get('/register', (req, res) => {
 
 app.post('/register', validateRegistration, (req, res) => {
 
-    const { username, email, password, address, contact, role } = req.body;
+    const { username, email, password, confirmpassword, contact, accounttype } = req.body;
 
-    const sql = 'INSERT INTO users (username, email, password, address, contact, role) VALUES (?, ?, SHA1(?), ?, ?, ?)';
-    connection.query(sql, [username, email, password, address, contact, role], (err, result) => {
+    const sql = 'INSERT INTO users (username, email, password, confirmpassword, contact, accounttype) VALUES (?, ?, SHA1(?), ?, ?, ?)';
+    connection.query(sql, [username, email, password, confirmpassword, contact, accountype], (err, result) => {
         if (err) {
             throw err;
         }
