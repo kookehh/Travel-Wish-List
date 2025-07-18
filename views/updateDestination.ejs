@@ -11,7 +11,7 @@
   <!-- Navbar -->
   <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
     <div class="container-fluid">
-      <a class="navbar-brand" href="/">Supermarket App</a>
+      <a class="navbar-brand" href="/">Travel Destination</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#collapsibleNavbar">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -33,7 +33,7 @@
 
   <!-- Main content -->
   <div class="container mt-4">
-    <h2 class="text-center mb-4">Update Product</h2>
+    <h2 class="text-center mb-4">Update Destination</h2>
     
     <% if (product) { %>
       <form action="/updateProduct/<%= product.productId %>" method="POST" enctype="multipart/form-data" class="mx-auto" style="max-width: 500px;">
@@ -70,7 +70,7 @@
         </div>
       </form>
     <% } else { %>
-      <p class="text-center">No Travel Wish List found.</p>
+      <p class="text-center">No Destination found.</p>
     <% } %>
   </div>
 </body>
