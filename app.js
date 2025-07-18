@@ -153,7 +153,7 @@ app.post('/login', (req, res) => {
 
             // Redirect based on user role
             if (req.session.user.accounttype === 'admin') {
-                return res.redirect('/inventory'); // change to your admin page
+                return res.redirect('/continent'); // change to your admin page
             } else {
                 return res.redirect('/continent');
             }
