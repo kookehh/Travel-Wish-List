@@ -148,10 +148,8 @@ app.post('/login', (req, res) => {
             // Successful login
             req.session.user = results[0]; 
             req.flash('success', 'Login successful!');
-            if(req.session.user.role == 'user')
-                res.redirect('/shopping');
-            else
-                res.redirect('/inventory');
+            if (req.session.user.role == 'user')
+                res.redirect('/continent');
         } else {
             // Invalid credentials
             req.flash('error', 'Invalid email or password.');
@@ -168,13 +166,13 @@ app.get('/continent', checkAuthenticated, (req, res) => {
 });
 
 
-app.get('/shopping', checkAuthenticated, (req, res) => {
-    // Fetch data from MySQL
-    connection.query('SELECT * FROM destination', (error, results) => {
-        if (error) throw error;
-        res.render('shopping', { user: req.session.user, destination: results });
-      });
-});
+// app.get('/shopping', checkAuthenticated, (req, res) => {
+//     // Fetch data from MySQL
+//     connection.query('SELECT * FROM destination', (error, results) => {
+//         if (error) throw error;
+//         res.render('shopping', { user: req.session.user, destination: results });
+//       });
+// });
 
 app.post('/add-to-cart/:id', checkAuthenticated, (req, res) => {
     const destinationId = parseInt(req.params.id);
