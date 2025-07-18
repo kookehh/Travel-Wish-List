@@ -132,7 +132,7 @@ app.get('/login', (req, res) => {
 app.post('/login', (req, res) => {
     const { email, password } = req.body;
 
-    // Validate email and password
+    // Validate input
     if (!email || !password) {
         req.flash('error', 'All fields are required.');
         return res.redirect('/login');
@@ -141,22 +141,30 @@ app.post('/login', (req, res) => {
     const sql = 'SELECT * FROM users WHERE email = ? AND password = SHA1(?)';
     connection.query(sql, [email, password], (err, results) => {
         if (err) {
-            throw err;
+            console.error('Login query error:', err);
+            req.flash('error', 'Something went wrong. Please try again.');
+            return res.redirect('/login');
         }
 
         if (results.length > 0) {
             // Successful login
-            req.session.user = results[0]; 
+            req.session.user = results[0];
             req.flash('success', 'Login successful!');
-            if (req.session.user.role == 'user')
-                res.redirect('/continent');
+
+            // Redirect based on user role
+            if (req.session.user.accounttype === 'admin') {
+                return res.redirect('/inventory'); // change to your admin page
+            } else {
+                return res.redirect('/continent');
+            }
         } else {
             // Invalid credentials
             req.flash('error', 'Invalid email or password.');
-            res.redirect('/login');
+            return res.redirect('/login');
         }
     });
 });
+
 
 app.get('/continent', checkAuthenticated, (req, res) => {
     connection.query('SELECT * FROM continent', (error, results) => {
