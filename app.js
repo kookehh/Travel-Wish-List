@@ -18,15 +18,15 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 const connection = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'Republic_C207',
-    database: 'C328TravelWishList_jetbackbuy'
-    // host: 'zxw6ws.h.filess.io',
-    // port: 3307,
-    // user: 'C328TravelWishList_jetbackbuy',
-    // password: '427766ceea97ead6c7975d85ac90ea584f82a776',
+    // host: 'localhost',
+    // user: 'root',
+    // password: 'Republic_C207',
     // database: 'C328TravelWishList_jetbackbuy'
+    host: 'zxw6ws.h.filess.io',
+    port: 3307,
+    user: 'C328TravelWishList_jetbackbuy',
+    password: '427766ceea97ead6c7975d85ac90ea584f82a776',
+    database: 'C328TravelWishList_jetbackbuy'
   });
 
 connection.connect((err) => {
@@ -98,13 +98,13 @@ app.get('/',  (req, res) => {
     res.render('index', {user: req.session.user} );
 });
 
-app.get('/inventory', checkAuthenticated, checkAdmin, (req, res) => {
-    // Fetch data from MySQL
-    connection.query('SELECT * FROM destination', (error, results) => {
-      if (error) throw error;
-      res.render('inventory', { destination: results, user: req.session.user });
-    });
-});
+// app.get('/inventory', checkAuthenticated, checkAdmin, (req, res) => {
+//     // Fetch data from MySQL
+//     connection.query('SELECT * FROM destination', (error, results) => {
+//       if (error) throw error;
+//       res.render('inventory', { destination: results, user: req.session.user });
+//     });
+// });
 
 app.get('/register', (req, res) => {
     res.render('register', { messages: req.flash('error'), formData: req.flash('formData')[0] });
@@ -174,45 +174,45 @@ app.get('/continent', checkAuthenticated, (req, res) => {
 //       });
 // });
 
-app.post('/add-to-cart/:id', checkAuthenticated, (req, res) => {
-    const destinationId = parseInt(req.params.id);
-    const quantity = parseInt(req.body.quantity) || 1;
+// app.post('/add-to-cart/:id', checkAuthenticated, (req, res) => {
+//     const destinationId = parseInt(req.params.id);
+//     const quantity = parseInt(req.body.quantity) || 1;
 
-    connection.query('SELECT * FROM destination WHERE destinationId = ?', [destinationId], (error, results) => {
-        if (error) throw error;
+//     connection.query('SELECT * FROM destination WHERE destinationId = ?', [destinationId], (error, results) => {
+//         if (error) throw error;
 
-        if (results.length > 0) {
-            const destination = results[0];
+//         if (results.length > 0) {
+//             const destination = results[0];
 
-            // Initialize cart in session if not exists
-            if (!req.session.cart) {
-                req.session.cart = [];
-            }
+//             // Initialize cart in session if not exists
+//             if (!req.session.cart) {
+//                 req.session.cart = [];
+//             }
 
-            // Check if destination already in cart
-            const existingItem = req.session.cart.find(item => item.destinationId === destinationId);
-            if (existingItem) {
-                existingItem.quantity += quantity;
-            } else {
-                req.session.cart.push({
-                    destinationId: destination.destinationId,
-                    destinationName: destination.destinationName,
-                    price: destination.price,
-                    quantity: quantity,
-                    image: destination.image
-                });
-            }
+//             // Check if destination already in cart
+//             const existingItem = req.session.cart.find(item => item.destinationId === destinationId);
+//             if (existingItem) {
+//                 existingItem.quantity += quantity;
+//             } else {
+//                 req.session.cart.push({
+//                     destinationId: destination.destinationId,
+//                     destinationName: destination.destinationName,
+//                     price: destination.price,
+//                     quantity: quantity,
+//                     image: destination.image
+//                 });
+//             }
 
-            res.redirect('/cart');
-        } else {
-            res.status(404).send("Destination not found");
-        }
-    });
-});
+//             res.redirect('/cart');
+//         } else {
+//             res.status(404).send("Destination not found");
+//         }
+//     });
+// });
 
-app.get('/cart', checkAuthenticated, (req, res) => {
-    const cart = req.session.cart || [];
-    res.render('cart', { cart, user: req.session.user });
+app.get('/wishlist', checkAuthenticated, (req, res) => {
+    const wishlist = req.session.wishlist || [];
+    res.render('wishlist', { wishlist, user: req.session.user });
 });
 
 app.get('/logout', (req, res) => {
@@ -239,152 +239,152 @@ app.get('/destination/:id', checkAuthenticated, (req, res) => {
   });
 });
 
-app.get('/addDestination', checkAuthenticated, checkAdmin, (req, res) => {
-    res.render('addDestination', {user: req.session.user } ); 
-});
+// app.get('/addDestination', checkAuthenticated, checkAdmin, (req, res) => {
+//     res.render('addDestination', {user: req.session.user } ); 
+// });
 
-app.get('/addCountry', checkAuthenticated, checkAdmin, (req, res) => {
-    res.render('addCountry', {user: req.session.user } ); 
-});
+// app.get('/addCountry', checkAuthenticated, checkAdmin, (req, res) => {
+//     res.render('addCountry', {user: req.session.user } ); 
+// });
 
-app.get('/addCity', checkAuthenticated, checkAdmin, (req, res) => {
-    res.render('addCity', {user: req.session.user } ); 
-});
+// app.get('/addCity', checkAuthenticated, checkAdmin, (req, res) => {
+//     res.render('addCity', {user: req.session.user } ); 
+// });
 
-app.post('/addDestination', upload.single('image'),  (req, res) => {
-    // Extract destination data from the request body
-    const { name, quantity, price} = req.body;
-    let image;
-    if (req.file) {
-        image = req.file.filename; // Save only the filename
-    } else {
-        image = null;
-    }
-
-
-
-    const sql = 'INSERT INTO destination (destinationName, quantity, price, image) VALUES (?, ?, ?, ?)';
-    // Insert the new destination into the database
-    connection.query(sql , [name, quantity, price, image], (error, results) => {
-        if (error) {
-            // Handle any error that occurs during the database operation
-            console.error("Error adding destination:", error);
-            res.status(500).send('Error adding destination');
-        } else {
-            // Send a success response
-            res.redirect('/inventory');
-        }
-    });
-});
-
-app.post('/addDestination', upload.single('image'),  (req, res) => {
-    // Extract destination data from the request body
-    const { name, quantity, price} = req.body;
-    let image;
-    if (req.file) {
-        image = req.file.filename; // Save only the filename
-    } else {
-        image = null;
-    }
+// app.post('/addDestination', upload.single('image'),  (req, res) => {
+//     // Extract destination data from the request body
+//     const { name, quantity, price} = req.body;
+//     let image;
+//     if (req.file) {
+//         image = req.file.filename; // Save only the filename
+//     } else {
+//         image = null;
+//     }
 
 
 
-    const sql = 'INSERT INTO destination (destinationName, quantity, price, image) VALUES (?, ?, ?, ?)';
-    // Insert the new destination into the database
-    connection.query(sql , [name, quantity, price, image], (error, results) => {
-        if (error) {
-            // Handle any error that occurs during the database operation
-            console.error("Error adding destination:", error);
-            res.status(500).send('Error adding destination');
-        } else {
-            // Send a success response
-            res.redirect('/inventory');
-        }
-    });
-});
+//     const sql = 'INSERT INTO destination (destinationName, quantity, price, image) VALUES (?, ?, ?, ?)';
+//     // Insert the new destination into the database
+//     connection.query(sql , [name, quantity, price, image], (error, results) => {
+//         if (error) {
+//             // Handle any error that occurs during the database operation
+//             console.error("Error adding destination:", error);
+//             res.status(500).send('Error adding destination');
+//         } else {
+//             // Send a success response
+//             res.redirect('/inventory');
+//         }
+//     });
+// });
 
-app.post('/addDestination', upload.single('image'),  (req, res) => {
-    // Extract destination data from the request body
-    const { name, quantity, price} = req.body;
-    let image;
-    if (req.file) {
-        image = req.file.filename; // Save only the filename
-    } else {
-        image = null;
-    }
+// app.post('/addCountry', upload.single('image'),  (req, res) => {
+//     // Extract destination data from the request body
+//     const { name, quantity, price} = req.body;
+//     let image;
+//     if (req.file) {
+//         image = req.file.filename; // Save only the filename
+//     } else {
+//         image = null;
+//     }
 
 
 
-    const sql = 'INSERT INTO destination (destinationName, quantity, price, image) VALUES (?, ?, ?, ?)';
-    // Insert the new destination into the database
-    connection.query(sql , [name, quantity, price, image], (error, results) => {
-        if (error) {
-            // Handle any error that occurs during the database operation
-            console.error("Error adding destination:", error);
-            res.status(500).send('Error adding destination');
-        } else {
-            // Send a success response
-            res.redirect('/inventory');
-        }
-    });
-});
+//     const sql = 'INSERT INTO destination (destinationName, quantity, price, image) VALUES (?, ?, ?, ?)';
+//     // Insert the new destination into the database
+//     connection.query(sql , [name, quantity, price, image], (error, results) => {
+//         if (error) {
+//             // Handle any error that occurs during the database operation
+//             console.error("Error adding destination:", error);
+//             res.status(500).send('Error adding destination');
+//         } else {
+//             // Send a success response
+//             res.redirect('/inventory');
+//         }
+//     });
+// });
 
-app.get('/updateDestination/:id',checkAuthenticated, checkAdmin, (req,res) => {
-    const destinationId = req.params.id;
-    const sql = 'SELECT * FROM destination WHERE destinationId = ?';
+// app.post('/addList', upload.single('image'),  (req, res) => {
+//     // Extract destination data from the request body
+//     const { name, quantity, price} = req.body;
+//     let image;
+//     if (req.file) {
+//         image = req.file.filename; // Save only the filename
+//     } else {
+//         image = null;
+//     }
 
-    // Fetch data from MySQL based on the destination ID
-    connection.query(sql , [destinationId], (error, results) => {
-        if (error) throw error;
 
-        // Check if any destination with the given ID was found
-        if (results.length > 0) {
-            // Render HTML page with the destination data
-            res.render('updateDestination', { destination: results[0] });
-        } else {
-            // If no destination with the given ID was found, render a 404 page or handle it accordingly
-            res.status(404).send('Destination not found');
-        }
-    });
-});
 
-app.post('/updateDestination/:id', upload.single('image'), (req, res) => {
-    const destinationId = req.params.id;
-    // Extract destination data from the request body
-    const { name, quantity, price } = req.body;
-    let image  = req.body.currentImage; //retrieve current image filename
-    if (req.file) { //if new image is uploaded
-        image = req.file.filename; // set image to be new image filename
-    } 
+//     const sql = 'INSERT INTO destination (destinationName, quantity, price, image) VALUES (?, ?, ?, ?)';
+//     // Insert the new destination into the database
+//     connection.query(sql , [name, quantity, price, image], (error, results) => {
+//         if (error) {
+//             // Handle any error that occurs during the database operation
+//             console.error("Error adding destination:", error);
+//             res.status(500).send('Error adding destination');
+//         } else {
+//             // Send a success response
+//             res.redirect('/inventory');
+//         }
+//     });
+// });
 
-    const sql = 'UPDATE destination SET destinationName = ? , quantity = ?, price = ?, image =? WHERE destinationId = ?';
-    // Insert the new destination into the database
-    connection.query(sql, [name, quantity, price, image, destinationId], (error, results) => {
-        if (error) {
-            // Handle any error that occurs during the database operation
-            console.error("Error updating destination:", error);
-            res.status(500).send('Error updating destination');
-        } else {
-            // Send a success response
-            res.redirect('/inventory');
-        }
-    });
-});
+// app.get('/updateDestination/:id',checkAuthenticated, checkAdmin, (req,res) => {
+//     const destinationId = req.params.id;
+//     const sql = 'SELECT * FROM destination WHERE destinationId = ?';
 
-app.get('/deleteDestination/:id', (req, res) => {
-    const destinationId = req.params.id;
+//     // Fetch data from MySQL based on the destination ID
+//     connection.query(sql , [destinationId], (error, results) => {
+//         if (error) throw error;
 
-    connection.query('DELETE FROM destination WHERE destinationId = ?', [destinationId], (error, results) => {
-        if (error) {
-            // Handle any error that occurs during the database operation
-            console.error("Error deleting destination:", error);
-            res.status(500).send('Error deleting destination');
-        } else {
-            // Send a success response
-            res.redirect('/inventory');
-        }
-    });
-});
+//         // Check if any destination with the given ID was found
+//         if (results.length > 0) {
+//             // Render HTML page with the destination data
+//             res.render('updateDestination', { destination: results[0] });
+//         } else {
+//             // If no destination with the given ID was found, render a 404 page or handle it accordingly
+//             res.status(404).send('Destination not found');
+//         }
+//     });
+// });
+
+// app.post('/updateDestination/:id', upload.single('image'), (req, res) => {
+//     const destinationId = req.params.id;
+//     // Extract destination data from the request body
+//     const { name, quantity, price } = req.body;
+//     let image  = req.body.currentImage; //retrieve current image filename
+//     if (req.file) { //if new image is uploaded
+//         image = req.file.filename; // set image to be new image filename
+//     } 
+
+//     const sql = 'UPDATE destination SET destinationName = ? , quantity = ?, price = ?, image =? WHERE destinationId = ?';
+//     // Insert the new destination into the database
+//     connection.query(sql, [name, quantity, price, image, destinationId], (error, results) => {
+//         if (error) {
+//             // Handle any error that occurs during the database operation
+//             console.error("Error updating destination:", error);
+//             res.status(500).send('Error updating destination');
+//         } else {
+//             // Send a success response
+//             res.redirect('/inventory');
+//         }
+//     });
+// });
+
+// app.get('/deleteDestination/:id', (req, res) => {
+//     const destinationId = req.params.id;
+
+//     connection.query('DELETE FROM destination WHERE destinationId = ?', [destinationId], (error, results) => {
+//         if (error) {
+//             // Handle any error that occurs during the database operation
+//             console.error("Error deleting destination:", error);
+//             res.status(500).send('Error deleting destination');
+//         } else {
+//             // Send a success response
+//             res.redirect('/inventory');
+//         }
+//     });
+// });
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
