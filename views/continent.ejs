@@ -32,21 +32,38 @@
   </nav>
 
   <!-- Main Content -->
-  <div class="container mt-4">
-    <h2 class="text-center mb-4">Add New Destination</h2>
-    <form action="/addDestination" method="POST" enctype="multipart/form-data" class="mx-auto" style="max-width: 500px;">
+  <div class="container">
+        <p>Welcome</p>
+        <br>
+        <div class="text-center"><h2>Continent</h2></div>
+        <br>
+        <% if (continent) { %> <!-- Check if product data exists -->
+            <div>
+                <p><b>Continent Image:</b><br> <img src = "/images/<%= continent.image %>" width="20%"></p>
+                <p><b>Continent Name:</b><br> <%= continent.continentName %></p> 
+            </div>
+        <% } %>
+        
+  </div>
+
+
+  <!-- <div class="container mt-4">
+    <h2 class="text-center mb-4">Continent</h2>
+    <form action="/continent" method="POST" enctype="multipart/form-data" class="mx-auto" style="max-width: 500px;">
+      
 
       <div class="mb-4">
-        <label for="image" class="form-label">Destination Image</label>
-        <input class="form-control" type="file" id="image" name="image" accept="image/*" required>
+        <label for="image" class="form-label">Continent Image</label>
+        <class="form-control" type="file" id="image" name="image" accept="image/*" required>
       </div>
 
       <div class="mb-3">
         <label for="name" class="form-label">Destination Name</label>
-        <input type="text" class="form-control" id="name" name="name" required>
-      </div>
+        <type="text" class="form-control" id="name" name="name" required>
+      </div> -->
 
-      <div class="mb-3">
+
+      <!-- <div class="mb-3">
         <label for="price" class="form-label">Price ($)</label>
         <input type="number" class="form-control" id="price" name="price" min="0" step="0.01" required>
       </div>
@@ -58,7 +75,7 @@
 
       <div class="d-grid">
         <button type="submit" class="btn btn-primary">Add Destination</button>
-      </div>
+      </div> -->
 
     </form>
   </div>

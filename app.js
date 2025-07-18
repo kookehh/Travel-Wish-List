@@ -169,8 +169,38 @@ app.post('/login', (req, res) => {
 app.get('/continent', checkAuthenticated, (req, res) => {
     connection.query('SELECT * FROM continent', (error, results) => {
         if (error) throw error;
-        res.render('continent(user)', { destination: results });
+        res.render('continent', { continent: results });
       });
+});
+
+// app.get('/continent', checkAuthenticated, (req, res) => {
+//   connection.query('SELECT * FROM continent', (error, results) => {
+//     if (error) {
+//       console.error('Error fetching continents:', error);
+//       return res.status(500).send('Error retrieving data');
+//     }
+//     res.render('continent', { continent: results, user: req.session.user });
+//   });
+// });
+
+
+app.get('/continent/:id', checkAuthenticated, (req, res) => {
+  // Extract the destination ID from the request parameters
+  const continentId = req.params.id;
+
+  // Fetch data from MySQL based on the destination ID
+  connection.query('SELECT * FROM continent WHERE continentId = ?', [continentId], (error, results) => {
+      if (error) throw error;
+
+      // Check if any destination with the given ID was found
+      if (results.length > 0) {
+          // Render HTML page with the destination data
+          res.render('continent', { continent: results[0], user: req.session.user  });
+      } else {
+          // If no destination with the given ID was found, render a 404 page or handle it accordingly
+          res.status(404).send('continent not found');
+      }
+  });
 });
 
 
