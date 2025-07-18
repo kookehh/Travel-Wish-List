@@ -128,8 +128,8 @@
       </div>
 
       <div class="mb-3">
-        <label for="confirmPassword" class="form-label">Confirm Password:</label>
-        <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" required>
+        <label for="confirmpassword" class="form-label">Confirm Password:</label>
+        <input type="password" id="confirmpassword" name="confirmPassword" class="form-control" required>
       </div>
 
       <div class="mb-3">
@@ -139,8 +139,8 @@
       </div>
 
       <div class="mb-3">
-        <label for="role" class="form-label">Account Type:</label>
-        <select id="role" name="role" class="form-select" required>
+        <label for="accounttype" class="form-label">Account Type:</label>
+        <select id="accounttype" name="accounttype" class="form-select" required>
           <option value="user" <%=(formData && formData.role==='user' ) ? 'selected' : '' %>>Traveller</option>
           <option value="admin" <%=(formData && formData.role==='admin' ) ? 'selected' : '' %>>Admin</option>
         </select>
