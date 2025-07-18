@@ -18,15 +18,15 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 const connection = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'Republic_C207',
-    database: 'C328TravelWishList_jetbackbuy'
-    // host: 'zxw6ws.h.filess.io',
-    // port: 3307,
-    // user: 'C328TravelWishList_jetbackbuy',
-    // password: '427766ceea97ead6c7975d85ac90ea584f82a776',
+    // host: 'localhost',
+    // user: 'root',
+    // password: 'Republic_C207',
     // database: 'C328TravelWishList_jetbackbuy'
+    host: 'zxw6ws.h.filess.io',
+    port: 3307,
+    user: 'C328TravelWishList_jetbackbuy',
+    password: '427766ceea97ead6c7975d85ac90ea584f82a776',
+    database: 'C328TravelWishList_jetbackbuy'
   });
 
 connection.connect((err) => {
