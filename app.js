@@ -169,7 +169,7 @@ app.post('/login', (req, res) => {
 app.get('/continent', checkAuthenticated, (req, res) => {
     connection.query('SELECT * FROM continent', (error, results) => {
         if (error) throw error;
-        res.render('continent', { destination: results });
+        res.render('continent(user)', { destination: results });
       });
 });
 
