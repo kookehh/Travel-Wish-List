@@ -335,22 +335,43 @@ app.get('/logout', (req, res) => {
 
 app.get('/destination/:id', checkAuthenticated, (req, res) => {
   // Extract the destination ID from the request parameters
-  const destinationId = req.params.id;
+  const listId = req.params.id;
 
   // Fetch data from MySQL based on the destination ID
-  connection.query('SELECT * FROM destination WHERE destinationId = ?', [destinationId], (error, results) => {
+  connection.query('SELECT * FROM list WHERE listId = ?', [listId], (error, results) => {
       if (error) throw error;
 
       // Check if any destination with the given ID was found
       if (results.length > 0) {
           // Render HTML page with the destination data
-          res.render('destination', { destination: results[0], user: req.session.user  });
+          res.render('list', { list: results[0], user: req.session.user  });
       } else {
           // If no destination with the given ID was found, render a 404 page or handle it accordingly
-          res.status(404).send('destination not found');
+          res.status(404).send('list not found');
       }
   });
 });
+
+app.get('/list/:id/destinations', checkAuthenticated, (req, res) => {
+  const listId = req.params.id;
+
+  const sql = `
+    SELECT *
+    FROM destination
+    WHERE listId = ?
+  `;
+
+  connection.query(sql, [listId], (error, results) => {
+    if (error) throw error;
+
+    res.render('destination_user', {
+      destinations: results,
+      user: req.session.user  // pass user info for the template if needed
+    });
+  });
+});
+
+
 
 // app.get('/addDestination', checkAuthenticated, checkAdmin, (req, res) => {
 //     res.render('addDestination', {user: req.session.user } ); 

@@ -27,59 +27,28 @@
       </div>
     </nav>
 
-  <div class="container">
-    <p>Welcome, <%= user.username %> (<%= user.role %>)</p>
-    <br>
-    <div class="text-center"><h2>Products from Supermarket</h2></div>
-    <br>
-    <table class="table table-hover small text-center">
-      <thead>
-          <tr>
-            <th width="100">Product Name</th>
-            <th width="100">Product Image</th>
-            <th width="50">Quantity</th>
-            <th width="50">Price</th>
-            <th width="50">Quantity</th>
-            <th width="50">Buy</th>
-          </tr>
-      </thead>
-      <tbody>
-        <% for(let i=0; i < products.length; i++) { %>
-          <tr>
-            <td><a href="/product/<%= products[i].productId %>" ><%= products[i].productName %></a></td>
-            <td><img src = "images/<%= products[i].image %>" width="20%"></td>
-            <td><%= products[i].quantity %></td>
-            <td>$<%= products[i].price.toFixed(2) %></td>
-            <!-- <td>
-              <select id="role" name="role" class="form-control" >
-                <option value="1" selected >1</option>
-                <option value="2" >2</option>
-                <option value="3" >3</option>
-                <option value="4" >4</option>
-                <option value="5" >5</option>
-              </select>
-            </td> -->
-            <!-- Buy Link -->
-            <!-- <td><a href="/buyProduct/<%#= products[i].productId %>" class="btn btn-primary mt-3">Buy</a></td> -->
-            <td>
-              <select class="form-control" onchange="document.getElementById('quantity-<%= products[i].productId %>').value = this.value">
-                <% for (let q = 1; q <= 5; q++) { %>
-                  <option value="<%= q %>"><%= q %></option>
-                <% } %>
-              </select>
-            </td>
-
-            <td>
-                <form action="/add-to-cart/<%= products[i].productId %>" method="POST">
-                  <input type="hidden" name="quantity" id="quantity-<%= products[i].productId %>" value="1">
-                  <button type="submit" class="btn btn-primary mt-3">Buy</button>
-                </form>
-            </td>
-
-          </tr>
-        <% } %>
-      </tbody>
-    </table>
+    <div class="container mt-4">
+    <h2 class="text-center">Destinations in This List</h2>
+    <% if (destinations.length > 0) { %>
+      <div class="row">
+        <% destinations.forEach(dest => { %>
+          <div class="col-md-4 mb-4">
+            <div class="card">
+              <img src="/images/<%= dest.image %>" class="card-img-top" alt="<%= dest.destinationName %>">
+              <div class="card-body">
+                <h5 class="card-title"><%= dest.destinationName %></h5>
+                <p class="card-text"><%= dest.description %></p>
+                <p class="card-text"><strong>Price:</strong> $<%= dest.price.toFixed(2) %></p>
+              </div>
+            </div>
+          </div>
+        <% }); %>
+      </div>
+    <% } else { %>
+      <p>No destinations found for this list.</p>
+    <% } %>
+    <a href="/wishlist" class="btn btn-secondary mt-3">Back to Lists</a>
   </div>
+  
 </body>
 </html>
