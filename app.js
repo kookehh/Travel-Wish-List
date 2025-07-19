@@ -166,12 +166,35 @@ app.post('/login', (req, res) => {
 });
 
 
+// app.get('/country', checkAuthenticated, (req, res) => {
+//     connection.query('SELECT * FROM country', (error, results) => {
+//         if (error) throw error;
+//         res.render('country', { country: results });
+//       });
+// });
+
+// app.get('/country', checkAuthenticated, (req, res) => {
+//     connection.query('SELECT * FROM country', (error, results) => {
+//         if (error) throw error;
+//         res.render('country', { country: results }); // ✅ this is an array
+//     });
+// });
+
 app.get('/country', checkAuthenticated, (req, res) => {
     connection.query('SELECT * FROM country', (error, results) => {
         if (error) throw error;
-        res.render('country', { country: results });
-      });
+
+        console.log("All countries:", results);
+
+        // ✅ `results` is an array of country objects
+        res.render('country', { 
+            country: results,       // <-- passing the array
+            user: req.session.user 
+        });
+    });
 });
+
+
 
 // app.get('/continent', checkAuthenticated, (req, res) => {
 //   connection.query('SELECT * FROM continent', (error, results) => {
@@ -206,18 +229,52 @@ app.get('/country/:id', checkAuthenticated, (req, res) => {
 app.get('/country/:id/list', checkAuthenticated, (req, res) => {
     const countryId = req.params.id;
 
-    const sql = `
+    // Get both country info and its lists
+    const countryQuery = 'SELECT * FROM country WHERE countryId = ?';
+    const listQuery = `
         SELECT l.*, c.countryName, c.image AS countryImage
         FROM list l
         JOIN country c ON l.countryId = c.countryId
         WHERE c.countryId = ?
     `;
 
-    connection.query(sql, [countryId], (err, results) => {
+    // Get country details first
+    connection.query(countryQuery, [countryId], (err, countryResults) => {
         if (err) throw err;
-        res.render('list_user', { list: results, user: req.session.user });
+
+        if (countryResults.length === 0) {
+            return res.status(404).send('Country not found');
+        }
+
+        // Then get the list items
+        connection.query(listQuery, [countryId], (err, listResults) => {
+            if (err) throw err;
+
+            res.render('list_user', {
+                user: req.session.user,
+                country: countryResults[0],  // single object
+                list: listResults            // array
+            });
+        });
     });
 });
+
+
+// app.get('/country/:id/list', checkAuthenticated, (req, res) => {
+//     const countryId = req.params.id;
+
+//     const sql = `
+//         SELECT l.*, c.countryName, c.image AS countryImage
+//         FROM list l
+//         JOIN country c ON l.countryId = c.countryId
+//         WHERE c.countryId = ?
+//     `;
+
+//     connection.query(sql, [countryId], (err, results) => {
+//         if (err) throw err;
+//         res.render('list_user', { list: results, user: req.session.user });
+//     });
+// });
 
 
 

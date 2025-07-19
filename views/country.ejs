@@ -27,17 +27,17 @@
   <div class="container mt-5">
     <h2 class="text-center">Countries</h2>
     <div class="row mt-4">
-      <% country.forEach(country => { %>
+      <% country.forEach(c => { %>
         <div class="col-md-4 mb-4">
           <div class="card">
-            <img src="/images/<%= country.image %>" class="card-img-top" alt="<%= country.countryName %>">
+            <img src="/images/<%= c.image %>" class="card-img-top" alt="<%= c.countryName %>">
             <div class="card-body">
-              <h5 class="card-title"><%= country.countryName %></h5>
-              <a href="/country/<%= country.countryId %>" class="btn btn-primary">View Details</a>
+              <h5 class="card-title"><%= c.countryName %></h5>
+              <a href="/country/<%= c.countryId %>/list" class="btn btn-primary">View Lists</a>
             </div>
           </div>
         </div>
-      <% }); %>
+      <% }) %>
     </div>
   </div>
 </body>
