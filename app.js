@@ -155,7 +155,7 @@ app.post('/login', (req, res) => {
             if (req.session.user.accounttype === 'admin') {
                 return res.redirect('/continent'); // change to your admin page
             } else {
-                return res.redirect('/continent');
+                return res.redirect('/country');
             }
         } else {
             // Invalid credentials
@@ -166,10 +166,10 @@ app.post('/login', (req, res) => {
 });
 
 
-app.get('/continent', checkAuthenticated, (req, res) => {
-    connection.query('SELECT * FROM continent', (error, results) => {
+app.get('/country', checkAuthenticated, (req, res) => {
+    connection.query('SELECT * FROM country', (error, results) => {
         if (error) throw error;
-        res.render('continent', { continent: results });
+        res.render('country', { country: results });
       });
 });
 
@@ -184,24 +184,42 @@ app.get('/continent', checkAuthenticated, (req, res) => {
 // });
 
 
-app.get('/continent/:id', checkAuthenticated, (req, res) => {
+app.get('/country/:id', checkAuthenticated, (req, res) => {
   // Extract the destination ID from the request parameters
-  const continentId = req.params.id;
+  const countryId = req.params.id;
 
   // Fetch data from MySQL based on the destination ID
-  connection.query('SELECT * FROM continent WHERE continentId = ?', [continentId], (error, results) => {
+  connection.query('SELECT * FROM country WHERE countryId = ?', [countryId], (error, results) => {
       if (error) throw error;
 
       // Check if any destination with the given ID was found
       if (results.length > 0) {
           // Render HTML page with the destination data
-          res.render('continent', { continent: results[0], user: req.session.user  });
+          res.render('country', { country: results[0], user: req.session.user  });
       } else {
           // If no destination with the given ID was found, render a 404 page or handle it accordingly
-          res.status(404).send('continent not found');
+          res.status(404).send('country not found');
       }
   });
 });
+
+app.get('/country/:id/list', checkAuthenticated, (req, res) => {
+    const countryId = req.params.id;
+
+    const sql = `
+        SELECT l.*, c.countryName, c.image AS countryImage
+        FROM list l
+        JOIN country c ON l.countryId = c.countryId
+        WHERE c.countryId = ?
+    `;
+
+    connection.query(sql, [countryId], (err, results) => {
+        if (err) throw err;
+        res.render('list_user', { list: results, user: req.session.user });
+    });
+});
+
+
 
 
 // app.get('/shopping', checkAuthenticated, (req, res) => {
