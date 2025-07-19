@@ -287,41 +287,76 @@ app.get('/country/:id/list', checkAuthenticated, (req, res) => {
 //       });
 // });
 
-// app.post('/add-to-cart/:id', checkAuthenticated, (req, res) => {
-//     const destinationId = parseInt(req.params.id);
-//     const quantity = parseInt(req.body.quantity) || 1;
+app.post('/add-to-wishlist/:id', checkAuthenticated, (req, res) => {
+    const destinationId = parseInt(req.params.id);
+    const quantity = parseInt(req.body.quantity) || 1; // Default to 1 if not specified
 
-//     connection.query('SELECT * FROM destination WHERE destinationId = ?', [destinationId], (error, results) => {
-//         if (error) throw error;
+    connection.query('SELECT * FROM destination WHERE destinationId = ?', [destinationId], (error, results) => {
+        if (error) throw error;
 
-//         if (results.length > 0) {
-//             const destination = results[0];
+        if (results.length > 0) {
+            const destination = results[0];
 
-//             // Initialize cart in session if not exists
-//             if (!req.session.cart) {
-//                 req.session.cart = [];
-//             }
+            // Initialize cart in session if not exists
+            if (!req.session.wishlist) {
+                req.session.wishlist = [];
+            }
 
-//             // Check if destination already in cart
-//             const existingItem = req.session.cart.find(item => item.destinationId === destinationId);
-//             if (existingItem) {
-//                 existingItem.quantity += quantity;
-//             } else {
-//                 req.session.cart.push({
-//                     destinationId: destination.destinationId,
-//                     destinationName: destination.destinationName,
-//                     price: destination.price,
-//                     quantity: quantity,
-//                     image: destination.image
-//                 });
-//             }
+            // Check if destination already in cart
+            const existingItem = req.session.wishlist.find(item => item.destinationId === destinationId);
+            if (existingItem) {
+                existingItem.quantity += quantity;
+            } else {
+                req.session.wishlist.push({
+                    destinationId: destination.destinationId,
+                    image: destination.image,
+                    destinationName: destination.destinationName,
+                    price: destination.price,
+                    description: destination.description
+                });
+            }
 
-//             res.redirect('/cart');
-//         } else {
-//             res.status(404).send("Destination not found");
-//         }
-//     });
+            res.redirect('/wishlist');
+        } else {
+            res.status(404).send("Destination not found");
+        }
+    });
+});
+
+// app.post('/wishlist/add/:id', checkAuthenticated, (req, res) => {
+//   const destinationId = req.params.id;
+//   const userId = req.session.user.id; // correctly access user ID from session
+
+//   const sql = `INSERT INTO wishlist (userId, destinationId) VALUES (?, ?)`;
+//   db.query(sql, [userId, destinationId], (err, result) => {
+//     if (err) {
+//       console.error('Error adding to wishlist:', err);
+//       req.flash('error', 'Could not add to wishlist');
+//       return res.redirect('back');
+//     }
+//     req.flash('success', 'Added to wishlist!');
+//     res.redirect('back');
+//   });
 // });
+
+app.post('/wishlist/add/:id', checkAuthenticated, (req, res) => {
+    const destinationId = req.params.id;
+    const id = req.session.user.id; // correctly access user ID from session
+
+    const sql = `INSERT INTO wishlist (id, destinationId) VALUES (?, ?)`;
+
+    connection.query(sql, [id, destinationId], (err, result) => {
+        if (err) {
+            console.error('Error adding to wishlist:', err);
+            req.flash('error', 'Could not add to wishlist');
+            return res.redirect('back');
+        }
+        req.flash('success', 'Added to wishlist!');
+        res.redirect('back');
+    });
+});
+
+
 
 app.get('/wishlist', checkAuthenticated, (req, res) => {
     const wishlist = req.session.wishlist || [];
