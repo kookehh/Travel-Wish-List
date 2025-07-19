@@ -339,22 +339,44 @@ app.post('/add-to-wishlist/:id', checkAuthenticated, (req, res) => {
 //   });
 // });
 
-app.post('/wishlist/add/:id', checkAuthenticated, (req, res) => {
+// app.post('/wishlist/add/:id', checkAuthenticated, (req, res) => {
+//     const destinationId = req.params.id;
+//     const id = req.session.user.id; // correctly access user ID from session
+
+//     const sql = `INSERT INTO wishlist (id, destinationId) VALUES (?, ?)`;
+
+//     connection.query(sql, [id, destinationId], (err, result) => {
+//         if (err) {
+//             console.error('Error adding to wishlist:', err);
+//             req.flash('error', 'Could not add to wishlist');
+//             return res.redirect('back');
+//         }
+//         req.flash('success', 'Added to wishlist!');
+//         res.redirect('back');
+//     });
+// });
+
+app.post('/wishlist/:id', checkAuthenticated, (req, res) => {
     const destinationId = req.params.id;
-    const id = req.session.user.id; // correctly access user ID from session
+    const id = req.session.user.id;
 
-    const sql = `INSERT INTO wishlist (id, destinationId) VALUES (?, ?)`;
+    const insertSql = `
+        INSERT INTO wishlist (wishlistId, id, destinationId)
+        VALUES (?, ?, ?)
+    `;
 
-    connection.query(sql, [id, destinationId], (err, result) => {
+    connection.query(insertSql, [id, destinationId, req.body.quantity || 1], (err, result) => {
         if (err) {
-            console.error('Error adding to wishlist:', err);
-            req.flash('error', 'Could not add to wishlist');
-            return res.redirect('back');
+            console.error(err);
+            req.flash('error', 'Failed to add to wishlist.');
+            return res.redirect('/wishlist');
         }
-        req.flash('success', 'Added to wishlist!');
-        res.redirect('back');
+        req.flash('success', 'Destination added to wishlist!');
+        res.redirect('/wishlist');
     });
 });
+
+
 
 
 
