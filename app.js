@@ -323,6 +323,22 @@ app.post('/add-to-wishlist/:id', checkAuthenticated, (req, res) => {
     });
 });
 
+app.get('/editWishlist/:id', (req, res) => {
+    const productId = req.params.id;    
+    const sql = 'SELECT * FROM destination WHERE destinationId = ?';
+    connection.query( sql, [destinationId], (error, results) => {
+        if (error) {
+            console.error('Database query error: ', error.message);
+            res.status(500).send('Error retrieving product by ID');
+        }
+        if (results.length > 0) {
+            res.render('editDestination', { product: results[0] }); // Render HTML page with product data
+        } else {
+            res.status(404).send('Destination not found');
+        }
+    });
+});
+
 // app.post('/wishlist/add/:id', checkAuthenticated, (req, res) => {
 //   const destinationId = req.params.id;
 //   const userId = req.session.user.id; // correctly access user ID from session
