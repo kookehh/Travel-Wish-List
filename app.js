@@ -495,26 +495,24 @@ app.get('/updateList/:id',checkAuthenticated, checkAdmin, (req,res) => {
 
 app.post('/updateList/:id', upload.single('image'), (req, res) => {
     const listId = req.params.id;
-    // Extract product data from the request body
     const { name, countryId } = req.body;
-    let image  = req.body.currentImage; //retrieve current image filename
-    if (req.file) { //if new image is uploaded
-        image = req.file.filename; // set image to be new image filename
-    } 
+    let image  = req.body.currentImage; // retrieve current image filename
 
-    const sql = 'UPDATE list SET image = ? , listName = ?, countryId = ? WHERE listId = ?';
-    // Insert the new product into the database
-    connection.query(sql, [listId, image, listName, countryId], (error, results) => {
+    if (req.file) { // if new image uploaded
+        image = req.file.filename;
+    }
+
+    const sql = 'UPDATE list SET image = ?, listName = ?, countryId = ? WHERE listId = ?';
+
+    connection.query(sql, [image, name, countryId, listId], (error, results) => {
         if (error) {
-            // Handle any error that occurs during the database operation
             console.error("Error updating List:", error);
-            res.status(500).send('Error updating List');
-        } else {
-            // Send a success response
-            res.redirect('/country/${countryId}/list');
+            return res.status(500).send('Error updating List');
         }
+        res.redirect(`/country/${countryId}/list`);
     });
 });
+
 
 app.get('/addDestination', checkAuthenticated,  (req, res) => {
     res.render('addDestination', {user: req.session.user } ); 
