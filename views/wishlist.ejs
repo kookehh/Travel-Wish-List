@@ -34,10 +34,9 @@
       <table class="table table-bordered">
         <thead>
           <tr>
-            <th>Product</th>
+            <th>Destination Name</th>
+            <th>Image</th>
             <th>Price</th>
-            <th>Quantity</th>
-            <th>Total</th>
           </tr>
         </thead>
         <tbody>
@@ -46,16 +45,12 @@
             <tr>
                 <td><%= wishlist[i].destinationName %></td>
                 <td><img src="/images/<%= wishlist[i].image %>" width="80" class="img-thumbnail"></td>
-                <td>$<%= (wishlist[i].price * wishlist[i].quantity).toFixed(2) %></td>
+                <td>$<%= (wishlist[i].price).toFixed(2) %></td>
             </tr>
           <% }; %>
         </tbody>
       </table>
 
-      <form action="/add-to-wishlist/<%= d.destinationId %>" method="POST" style="display:inline-block;">
-        <input type="hidden" name="quantity" value="1">
-        <button type="submit" class="btn btn-primary">Add to Wishlist</button>
-      </form>
 
       <div class="mt-4">
         <a href="/destination" class="btn btn-secondary">Back to Shopping</a>

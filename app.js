@@ -397,10 +397,10 @@ app.get('/wishlist', checkAuthenticated, (req, res) => {
     const userId = req.session.user.id;
 
     const sql = `
-        SELECT w.*, destination.destinationName, destination.price, destination.image
-        FROM wishlist w
-        JOIN destination d ON w.destinationId = destination.destinationId
-        WHERE w.id = ?
+        SELECT wishlist.*, destination.destinationName, destination.price, destination.image
+        FROM wishlist 
+        JOIN destination ON wishlist.destinationId = destination.destinationId
+        WHERE wishlist.id = ?
     `;
 
     connection.query(sql, [userId], (err, results) => {
