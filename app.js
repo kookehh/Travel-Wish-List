@@ -98,14 +98,6 @@ app.get('/',  (req, res) => {
     res.render('index', {user: req.session.user} );
 });
 
-// app.get('/inventory', checkAuthenticated, checkAdmin, (req, res) => {
-//     // Fetch data from MySQL
-//     connection.query('SELECT * FROM destination', (error, results) => {
-//       if (error) throw error;
-//       res.render('inventory', { destination: results, user: req.session.user });
-//     });
-// });
-
 app.get('/register', (req, res) => {
     res.render('register', { messages: req.flash('error'), formData: req.flash('formData')[0] });
 });
@@ -165,21 +157,6 @@ app.post('/login', (req, res) => {
     });
 });
 
-
-// app.get('/country', checkAuthenticated, (req, res) => {
-//     connection.query('SELECT * FROM country', (error, results) => {
-//         if (error) throw error;
-//         res.render('country', { country: results });
-//       });
-// });
-
-// app.get('/country', checkAuthenticated, (req, res) => {
-//     connection.query('SELECT * FROM country', (error, results) => {
-//         if (error) throw error;
-//         res.render('country', { country: results }); // ✅ this is an array
-//     });
-// });
-
 app.get('/country', checkAuthenticated, (req, res) => {
     connection.query('SELECT * FROM country', (error, results) => {
         if (error) throw error;
@@ -194,19 +171,6 @@ app.get('/country', checkAuthenticated, (req, res) => {
         
     });
 });
-
-
-
-// app.get('/continent', checkAuthenticated, (req, res) => {
-//   connection.query('SELECT * FROM continent', (error, results) => {
-//     if (error) {
-//       console.error('Error fetching continents:', error);
-//       return res.status(500).send('Error retrieving data');
-//     }
-//     res.render('continent', { continent: results, user: req.session.user });
-//   });
-// });
-
 
 app.get('/country/:id', checkAuthenticated, (req, res) => {
   // Extract the destination ID from the request parameters
@@ -260,25 +224,6 @@ app.get('/country/:id/list', checkAuthenticated, (req, res) => {
     });
 });
 
-
-// app.get('/country/:id/list', checkAuthenticated, (req, res) => {
-//     const countryId = req.params.id;
-
-//     const sql = `
-//         SELECT l.*, c.countryName, c.image AS countryImage
-//         FROM list l
-//         JOIN country c ON l.countryId = c.countryId
-//         WHERE c.countryId = ?
-//     `;
-
-//     connection.query(sql, [countryId], (err, results) => {
-//         if (err) throw err;
-//         res.render('list_user', { list: results, user: req.session.user });
-//     });
-// });
-
-
-
 app.post('/add-to-wishlist/:id', checkAuthenticated, (req, res) => {
     const destinationId = parseInt(req.params.id);
     const quantity = parseInt(req.body.quantity) || 1; // Default to 1 if not specified
@@ -330,39 +275,6 @@ app.get('/editWishlist/:id', (req, res) => {
         }
     });
 });
-
-// app.post('/wishlist/add/:id', checkAuthenticated, (req, res) => {
-//   const destinationId = req.params.id;
-//   const userId = req.session.user.id; // correctly access user ID from session
-
-//   const sql = `INSERT INTO wishlist (userId, destinationId) VALUES (?, ?)`;
-//   db.query(sql, [userId, destinationId], (err, result) => {
-//     if (err) {
-//       console.error('Error adding to wishlist:', err);
-//       req.flash('error', 'Could not add to wishlist');
-//       return res.redirect('back');
-//     }
-//     req.flash('success', 'Added to wishlist!');
-//     res.redirect('back');
-//   });
-// });
-
-// app.post('/wishlist/add/:id', checkAuthenticated, (req, res) => {
-//     const destinationId = req.params.id;
-//     const id = req.session.user.id; // correctly access user ID from session
-
-//     const sql = `INSERT INTO wishlist (id, destinationId) VALUES (?, ?)`;
-
-//     connection.query(sql, [id, destinationId], (err, result) => {
-//         if (err) {
-//             console.error('Error adding to wishlist:', err);
-//             req.flash('error', 'Could not add to wishlist');
-//             return res.redirect('back');
-//         }
-//         req.flash('success', 'Added to wishlist!');
-//         res.redirect('back');
-//     });
-// });
 
 app.post('/wishlist/:id', checkAuthenticated, (req, res) => {
     const destinationId = req.params.id;
@@ -434,8 +346,6 @@ app.get('/destination/:id', checkAuthenticated, (req, res) => {
   });
 });
 
-
-
 app.get('/list/:id/destinations', checkAuthenticated, (req, res) => {
   const listId = req.params.id;
 
@@ -475,47 +385,9 @@ app.get('/destination/:id/event', checkAuthenticated, (req, res) => {
   });
 });
 
-// app.get('/addDestination', checkAuthenticated, checkAdmin, (req, res) => {
-//     res.render('addDestination', {user: req.session.user } ); 
-// });
-
 app.get('/addCountry', checkAuthenticated, (req, res) => {
     res.render('addCountry', {user: req.session.user } ); 
 });
-
-app.get('/addList', checkAuthenticated,  (req, res) => {
-    res.render('addList', {user: req.session.user } ); 
-});
-
-app.get('/addDestination', checkAuthenticated,  (req, res) => {
-    res.render('addDestination', {user: req.session.user } ); 
-});
-
-// app.post('/addDestination', upload.single('image'),  (req, res) => {
-//     // Extract destination data from the request body
-//     const { name, quantity, price} = req.body;
-//     let image;
-//     if (req.file) {
-//         image = req.file.filename; // Save only the filename
-//     } else {
-//         image = null;
-//     }
-
-
-
-//     const sql = 'INSERT INTO destination (destinationName, quantity, price, image) VALUES (?, ?, ?, ?)';
-//     // Insert the new destination into the database
-//     connection.query(sql , [name, quantity, price, image], (error, results) => {
-//         if (error) {
-//             // Handle any error that occurs during the database operation
-//             console.error("Error adding destination:", error);
-//             res.status(500).send('Error adding destination');
-//         } else {
-//             // Send a success response
-//             res.redirect('/inventory');
-//         }
-//     });
-// });
 
 app.post('/addCountry', upload.single('image'), (req, res) => {
     const { name } = req.body;  
@@ -536,8 +408,13 @@ app.post('/addCountry', upload.single('image'), (req, res) => {
     });
 });
 
+app.get('/addList', checkAuthenticated,  (req, res) => {
+    res.render('addList', {user: req.session.user } ); 
+});
+
 app.post('/addList', upload.single('image'), (req, res) => {
-    const { name } = req.body;  
+    const { name, countryId } = req.body;
+      
     let image;
     if (req.file) {
         image = req.file.filename; // Save only the filename
@@ -545,16 +422,19 @@ app.post('/addList', upload.single('image'), (req, res) => {
         image = null;
     }
 
-    const sql = 'INSERT INTO list (image, listName) VALUES (?, ?)';
-    connection.query(sql, [image, name], (err, results) => {
+    const sql = 'INSERT INTO list (image, listName, countryId) VALUES (?, ?, ?)';
+    connection.query(sql, [image, name, countryId], (err, results) => {
         if (err) {
             console.error("Error adding list:", err);
             return res.status(500).send('Error adding list');
         }
-        res.redirect('/list/:id');  
+        res.redirect(`/country/${countryId}/list`);  
     });
 });
 
+app.get('/addDestination', checkAuthenticated,  (req, res) => {
+    res.render('addDestination', {user: req.session.user } ); 
+});
 
 app.post('/addDestination', upload.single('image'), (req, res) => {
     const { name } = req.body;  
@@ -574,22 +454,6 @@ app.post('/addDestination', upload.single('image'), (req, res) => {
         res.redirect('/addDestination');  
     });
 });
-
-
-
-//     const sql = 'INSERT INTO destination (destinationName, quantity, price, image) VALUES (?, ?, ?, ?)';
-//     // Insert the new destination into the database
-//     connection.query(sql , [name, quantity, price, image], (error, results) => {
-//         if (error) {
-//             // Handle any error that occurs during the database operation
-//             console.error("Error adding destination:", error);
-//             res.status(500).send('Error adding destination');
-//         } else {
-//             // Send a success response
-//             res.redirect('/inventory');
-//         }
-//     });
-// });
 
 // app.post('/addList', upload.single('image'),  (req, res) => {
 //     // Extract destination data from the request body
