@@ -436,7 +436,7 @@ app.post('/updateCountry/:id', upload.single('image'), (req, res) => {
         image = req.file.filename; // set image to be new image filename
     } 
 
-    const sql = 'UPDATE country SET countryName = ? , image = ? WHERE productId = ?';
+    const sql = 'UPDATE country SET countryName = ? , image = ? WHERE countryId = ?';
     // Insert the new product into the database
     connection.query(sql, [countryName, countryId], (error, results) => {
         if (error) {
