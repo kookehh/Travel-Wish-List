@@ -408,6 +408,48 @@ app.post('/addCountry', upload.single('image'), (req, res) => {
     });
 });
 
+app.get('/updateCountry/:id',checkAuthenticated, checkAdmin, (req,res) => {
+    const productId = req.params.id;
+    const sql = 'SELECT * FROM country WHERE countryId = ?';
+
+    // Fetch data from MySQL based on the product ID
+    connection.query(sql , [countryId], (error, results) => {
+        if (error) throw error;
+
+        // Check if any product with the given ID was found
+        if (results.length > 0) {
+            // Render HTML page with the product data
+            res.render('editCountry', { country: results[0] });
+        } else {
+            // If no product with the given ID was found, render a 404 page or handle it accordingly
+            res.status(404).send('Country not found');
+        }
+    });
+});
+
+app.post('/updateCountry/:id', upload.single('image'), (req, res) => {
+    const productId = req.params.id;
+    // Extract product data from the request body
+    const { countryName, image } = req.body;
+    let image  = req.body.currentImage; //retrieve current image filename
+    if (req.file) { //if new image is uploaded
+        image = req.file.filename; // set image to be new image filename
+    } 
+
+    const sql = 'UPDATE country SET countryName = ? , image = ? WHERE productId = ?';
+    // Insert the new product into the database
+    connection.query(sql, [countryName, image, countryId], (error, results) => {
+        if (error) {
+            // Handle any error that occurs during the database operation
+            console.error("Error updating country:", error);
+            res.status(500).send('Error updating country');
+        } else {
+            // Send a success response
+            res.redirect('/country');
+        }
+    });
+});
+
 app.get('/addList', checkAuthenticated,  (req, res) => {
     res.render('addList', {user: req.session.user } ); 
 });
@@ -429,6 +471,48 @@ app.post('/addList', upload.single('image'), (req, res) => {
             return res.status(500).send('Error adding list');
         }
         res.redirect(`/country/${countryId}/list`);  
+    });
+});
+
+app.get('/updateList/:id',checkAuthenticated, checkAdmin, (req,res) => {
+    const productId = req.params.id;
+    const sql = 'SELECT * FROM list WHERE listId = ?';
+
+    // Fetch data from MySQL based on the product ID
+    connection.query(sql , [listId], (error, results) => {
+        if (error) throw error;
+
+        // Check if any product with the given ID was found
+        if (results.length > 0) {
+            // Render HTML page with the product data
+            res.render('editlist', { list: results[0] });
+        } else {
+            // If no product with the given ID was found, render a 404 page or handle it accordingly
+            res.status(404).send('list not found');
+        }
+    });
+});
+
+app.post('/updateList/:id', upload.single('image'), (req, res) => {
+    const productId = req.params.id;
+    // Extract product data from the request body
+    const { image, name, countryId } = req.body;
+    let image  = req.body.currentImage; //retrieve current image filename
+    if (req.file) { //if new image is uploaded
+        image = req.file.filename; // set image to be new image filename
+    } 
+
+    const sql = 'UPDATE list SET image = ? , name = ?, countryId = ? WHERE productId = ?';
+    // Insert the new product into the database
+    connection.query(sql, [image, name, countryId], (error, results) => {
+        if (error) {
+            // Handle any error that occurs during the database operation
+            console.error("Error updating List:", error);
+            res.status(500).send('Error updating List');
+        } else {
+            // Send a success response
+            res.redirect('/country/${countryId}/list');
+        }
     });
 });
 
