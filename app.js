@@ -377,8 +377,8 @@ app.post('/wishlist/:id', checkAuthenticated, (req, res) => {
     const id = req.session.user.id;
 
     const insertSql = `
-        INSERT INTO wishlist (wishlistId, id, destinationId)
-        VALUES (?, ?, ?)
+        INSERT INTO wishlist (id, destinationId)
+        VALUES (?, ?)
     `;
 
     connection.query(insertSql, [id, destinationId, req.body.quantity || 1], (err, result) => {
@@ -393,13 +393,36 @@ app.post('/wishlist/:id', checkAuthenticated, (req, res) => {
 });
 
 
-
-
-
 app.get('/wishlist', checkAuthenticated, (req, res) => {
-    const wishlist = req.session.wishlist || [];
-    res.render('wishlist', { wishlist, user: req.session.user });
+    const userId = req.session.user.id;
+
+    const sql = `
+        SELECT w.*, destination.destinationName, destination.price, destination.image
+        FROM wishlist w
+        JOIN destination d ON w.destinationId = destination.destinationId
+        WHERE w.id = ?
+    `;
+
+    connection.query(sql, [userId], (err, results) => {
+        if (err) {
+            console.error("Database error when fetching wishlist:", err);
+            return res.status(500).send("Error loading wishlist");
+        }
+
+        res.render('wishlist', {
+            wishlist: results,
+            user: req.session.user
+        });
+    });
 });
+
+
+
+
+// app.get('/wishlist', checkAuthenticated, (req, res) => {
+//     const wishlist = req.session.wishlist || [];
+//     res.render('wishlist', { wishlist, user: req.session.user });
+// });
 
 app.get('/logout', (req, res) => {
     req.session.destroy();
