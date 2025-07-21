@@ -153,7 +153,7 @@ app.post('/login', (req, res) => {
 
             // Redirect based on user role
             if (req.session.user.accounttype === 'admin') {
-                return res.redirect('/continent'); // change to your admin page
+                return res.redirect('/country'); // change to your admin page
             } else {
                 return res.redirect('/country');
             }
@@ -191,6 +191,7 @@ app.get('/country', checkAuthenticated, (req, res) => {
             country: results,       // <-- passing the array
             user: req.session.user 
         });
+        
     });
 });
 
