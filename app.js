@@ -502,9 +502,9 @@ app.post('/updateList/:id', upload.single('image'), (req, res) => {
         image = req.file.filename; // set image to be new image filename
     } 
 
-    const sql = 'UPDATE list SET image = ? , name = ?, countryId = ? WHERE listId = ?';
+    const sql = 'UPDATE list SET image = ? , listName = ?, countryId = ? WHERE listId = ?';
     // Insert the new product into the database
-    connection.query(sql, [listId, image, name, countryId], (error, results) => {
+    connection.query(sql, [listId, image, listName, countryId], (error, results) => {
         if (error) {
             // Handle any error that occurs during the database operation
             console.error("Error updating List:", error);
