@@ -393,6 +393,7 @@ app.post('/wishlist/:id', checkAuthenticated, (req, res) => {
 });
 
 
+
 app.get('/wishlist', checkAuthenticated, (req, res) => {
     const userId = req.session.user.id;
 
@@ -416,13 +417,6 @@ app.get('/wishlist', checkAuthenticated, (req, res) => {
     });
 });
 
-
-
-
-// app.get('/wishlist', checkAuthenticated, (req, res) => {
-//     const wishlist = req.session.wishlist || [];
-//     res.render('wishlist', { wishlist, user: req.session.user });
-// });
 
 app.get('/logout', (req, res) => {
     req.session.destroy();
@@ -448,6 +442,8 @@ app.get('/destination/:id', checkAuthenticated, (req, res) => {
   });
 });
 
+
+
 app.get('/list/:id/destinations', checkAuthenticated, (req, res) => {
   const listId = req.params.id;
 
@@ -467,7 +463,25 @@ app.get('/list/:id/destinations', checkAuthenticated, (req, res) => {
   });
 });
 
+app.get('/destination/:id/event', checkAuthenticated, (req, res) => {
+  const eventId = req.params.id;
 
+  const sql = 'SELECT * FROM destination WHERE destinationId = ?';
+
+  connection.query(sql, [eventId], (error, results) => {
+    if (error) throw error;
+
+    if (results.length > 0) {
+      res.render('event', { event: results[0] }); // 👈 Make sure 'event' has all expected fields
+    } else {
+      res.status(404).send('Event not found');
+    }
+    res.render('event', {
+      event: results,
+      user: req.session.user  // pass user info for the template if needed
+    });
+  });
+});
 
 // app.get('/addDestination', checkAuthenticated, checkAdmin, (req, res) => {
 //     res.render('addDestination', {user: req.session.user } ); 
