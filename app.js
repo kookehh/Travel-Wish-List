@@ -409,7 +409,7 @@ app.post('/addCountry', upload.single('image'), (req, res) => {
 });
 
 app.get('/updateCountry/:id',checkAuthenticated, checkAdmin, (req,res) => {
-    const productId = req.params.id;
+    const countryId = req.params.id;
     const sql = 'SELECT * FROM country WHERE countryId = ?';
 
     // Fetch data from MySQL based on the product ID
@@ -428,9 +428,9 @@ app.get('/updateCountry/:id',checkAuthenticated, checkAdmin, (req,res) => {
 });
 
 app.post('/updateCountry/:id', upload.single('image'), (req, res) => {
-    const productId = req.params.id;
+    const countryId = req.params.id;
     // Extract product data from the request body
-    const { countryName, image } = req.body;
+    const { countryName } = req.body;
     let image  = req.body.currentImage; //retrieve current image filename
     if (req.file) { //if new image is uploaded
         image = req.file.filename; // set image to be new image filename
@@ -475,7 +475,7 @@ app.post('/addList', upload.single('image'), (req, res) => {
 });
 
 app.get('/updateList/:id',checkAuthenticated, checkAdmin, (req,res) => {
-    const productId = req.params.id;
+    const listId = req.params.id;
     const sql = 'SELECT * FROM list WHERE listId = ?';
 
     // Fetch data from MySQL based on the product ID
@@ -494,9 +494,9 @@ app.get('/updateList/:id',checkAuthenticated, checkAdmin, (req,res) => {
 });
 
 app.post('/updateList/:id', upload.single('image'), (req, res) => {
-    const productId = req.params.id;
+    const listId = req.params.id;
     // Extract product data from the request body
-    const { image, name, countryId } = req.body;
+    const { name, countryId } = req.body;
     let image  = req.body.currentImage; //retrieve current image filename
     if (req.file) { //if new image is uploaded
         image = req.file.filename; // set image to be new image filename
