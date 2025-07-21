@@ -50,10 +50,6 @@
         <input type="text" class="form-control" id="name" name="name" value="<%= country.countryName %>" required>
       </div>
 
-      <% if (user && user.accounttype === 'admin') { %>
-        <a href="/updateCountry/<%= c.countryId %>" class="btn btn-warning mt-2">Edit</a>
-      <% } %>
-
       <div class="d-grid">
         <button type="submit" class="btn btn-primary">Update Country</button>
       </div>
