@@ -36,6 +36,10 @@
     <h2 class="text-center mb-4">Update Country</h2>
     <form action="/updateCountry/<=% country.countryId %>" method="POST" enctype="multipart/form-data" class="mx-auto" style="max-width: 500px;">
 
+      <div class="mb-3">
+          <img src="/images/<%= country.image %>" class="img-thumbnail mt-2" style="width: 150px;">
+      </div>
+        
       <div class="mb-4">
         <label for="image" class="form-label">Country Image</label>
         <input class="form-control" type="file" id="image" name="image" value="<%= country.image %> accept="image/*" required>
