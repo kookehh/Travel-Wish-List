@@ -520,8 +520,6 @@ app.get('/list/:id/destinations', checkAuthenticated, (req, res) => {
 //         image = null;
 //     }
 
-
-
 //     const sql = 'INSERT INTO destination (destinationName, quantity, price, image) VALUES (?, ?, ?, ?)';
 //     // Insert the new destination into the database
 //     connection.query(sql , [name, quantity, price, image], (error, results) => {
