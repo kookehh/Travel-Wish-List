@@ -399,7 +399,7 @@ app.post('/addCountry', upload.single('image'), (req, res) => {
     }
 
     const sql = 'INSERT INTO country (countryName, image) VALUES (?, ?)';
-    connection.query(sql, [name, image], (err, results) => {
+    connection.query(sql, [name], (err, results) => {
         if (err) {
             console.error("Error adding country:", err);
             return res.status(500).send('Error adding country');
@@ -438,7 +438,7 @@ app.post('/updateCountry/:id', upload.single('image'), (req, res) => {
 
     const sql = 'UPDATE country SET countryName = ? , image = ? WHERE productId = ?';
     // Insert the new product into the database
-    connection.query(sql, [countryName, image, countryId], (error, results) => {
+    connection.query(sql, [countryName, countryId], (error, results) => {
         if (error) {
             // Handle any error that occurs during the database operation
             console.error("Error updating country:", error);
