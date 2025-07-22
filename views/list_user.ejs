@@ -18,10 +18,9 @@
               <a class="nav-link" href="/wishlist">Wishlist</a>
             </li>
             <% if (user && user.accounttype === 'admin') { %>
-              <li class="nav-item">
-                <a class="nav-link" href="/addList">Add List</a>
-              </li>
-            <% } %> 
+              <a href="/country/<%= country.countryId %>/addList" class="btn btn-success mt-2">Add List</a>
+            <% } %>
+
             <li class="nav-item">
               <a class="nav-link" href="/logout">Logout</a>
             </li> 
