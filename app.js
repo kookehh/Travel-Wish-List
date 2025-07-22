@@ -327,6 +327,7 @@ app.get('/logout', (req, res) => {
     res.redirect('/');
 });
 
+
 app.get('/destination/:id', checkAuthenticated, (req, res) => {
   // Extract the destination ID from the request parameters
   const listId = req.params.id;
