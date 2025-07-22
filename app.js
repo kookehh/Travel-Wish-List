@@ -375,15 +375,11 @@ app.get('/destination/:id/event', checkAuthenticated, (req, res) => {
     if (error) throw error;
 
     if (results.length > 0) {
-      res.render('event', { event: results[0] }); // 👈 Make sure 'event' has all expected fields
+      res.render('event', { event: results[0], user: req.session.user }); // 👈 Make sure 'event' has all expected fields
     } else {
       res.status(404).send('Event not found');
     }
-    res.render('event', {
-      event: results,
-      user: req.session.user  // pass user info for the template if needed
     });
-  });
 });
 
 app.get('/addCountry', checkAuthenticated, (req, res) => {
