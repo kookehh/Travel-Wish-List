@@ -37,6 +37,9 @@
             <th>Destination Name</th>
             <th>Image</th>
             <th>Price</th>
+            <% if (user && user.accounttype === 'user') { %>
+              <th>Delete</th>
+            <% } %>
           </tr>
         </thead>
         <tbody>
@@ -46,6 +49,12 @@
                 <td><%= wishlist[i].destinationName %></td>
                 <td><img src="/images/<%= wishlist[i].image %>" width="80" class="img-thumbnail"></td>
                 <td>$<%= (wishlist[i].price).toFixed(2) %></td>
+                <% if (user && user.accounttype === 'user') { %>
+                <td>
+                  <form action="/wishlist/delete/<%= wishlist[i].wishlistId %>" method="POST">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                  </form>
+                <% } %>
             </tr>
           <% }; %>
         </tbody>

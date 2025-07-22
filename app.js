@@ -603,6 +603,21 @@ app.post('/addDestination', upload.single('image'), (req, res) => {
 //     });
 // });
 
+// app.get('/deleteWishlist/:id', (req, res) => {
+//     const destinationId = req.params.id;
+
+//     connection.query('DELETE FROM destination WHERE destinationId = ?', [destinationId], (error, results) => {
+//         if (error) {
+//             // Handle any error that occurs during the database operation
+//             console.error("Error deleting destination:", error);
+//             res.status(500).send('Error deleting destination');
+//         } else {
+//             // Send a success response
+//             res.redirect('/inventory');
+//         }
+//     });
+// });
+
 // app.get('/deleteDestination/:id', (req, res) => {
 //     const destinationId = req.params.id;
 
