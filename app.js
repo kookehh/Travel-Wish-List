@@ -450,8 +450,40 @@ app.post('/updateCountry/:id', upload.single('image'), (req, res) => {
     });
 });
 
-app.get('/addList', checkAuthenticated,  (req, res) => {
-    res.render('addList', {user: req.session.user } ); 
+// app.get('/country/:id/addList', checkAuthenticated, (req, res) => {
+//     const countryId = req.params.id;
+//     const sql = 'SELECT * FROM country WHERE countryId = ?';
+
+//     connection.query(sql, [countryId], (err, results) => {
+//         if (err) {
+//             console.error("Error fetching country:", err);
+//             return res.status(500).send("Error fetching country");
+//         }
+
+//         if (results.length === 0) {
+//             return res.status(404).send("Country not found");
+//         }
+
+//         res.render('addList', {
+//             user: req.session.user,
+//             country: results[0]
+//         });
+//     });
+// });
+
+app.get('/country/:id/addList', checkAuthenticated, (req, res) => {
+    const countryId = req.params.id;
+    const sql = 'SELECT * FROM country WHERE countryId = ?';
+
+    connection.query(sql, [countryId], (err, results) => {
+        if (err) return res.status(500).send('DB error');
+        if (results.length === 0) return res.status(404).send('Country not found');
+
+        res.render('addList', {
+            user: req.session.user,
+            country: results[0]
+        });
+    });
 });
 
 app.post('/country/:id/addList', upload.single('image'), (req, res) => {
