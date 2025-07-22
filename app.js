@@ -5,10 +5,10 @@ const flash = require('connect-flash');
 const multer = require('multer');
 const app = express();
 
-// Set up multer for file uploads
+
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'public/images'); // Directory to save uploaded files
+        cb(null, 'public/images');
     },
     filename: (req, file, cb) => {
         cb(null, file.originalname); 
@@ -46,18 +46,15 @@ app.use(express.urlencoded({
     extended: false
 }));
 
-//TO DO: Insert code for Session Middleware below 
 app.use(session({
     secret: 'secret',
     resave: false,
     saveUninitialized: true,
-    // Session expires after 1 week of inactivity
     cookie: { maxAge: 1000 * 60 * 60 * 24 * 7 } 
 }));
 
 app.use(flash());
 
-// Middleware to check if user is logged in
 const checkAuthenticated = (req, res, next) => {
     if (req.session.user) {
         return next();
@@ -67,17 +64,15 @@ const checkAuthenticated = (req, res, next) => {
     }
 };
 
-// Middleware to check if user is admin
 const checkAdmin = (req, res, next) => {
     if (req.session.user.accounttype === 'admin') {
         return next();
     } else {
         req.flash('error', 'Access denied');
-        res.redirect('/'); // Redirect to a safe page
+        res.redirect('/'); 
     }
 };
 
-// Middleware for form validation
 const validateRegistration = (req, res, next) => {
     const { username, email, password, contact, accounttype } = req.body;
 
@@ -93,7 +88,6 @@ const validateRegistration = (req, res, next) => {
     next();
 };
 
-// Define routes
 app.get('/',  (req, res) => {
     res.render('index', {user: req.session.user} );
 });
@@ -124,7 +118,6 @@ app.get('/login', (req, res) => {
 app.post('/login', (req, res) => {
     const { email, password } = req.body;
 
-    // Validate input
     if (!email || !password) {
         req.flash('error', 'All fields are required.');
         return res.redirect('/login');
@@ -139,18 +132,15 @@ app.post('/login', (req, res) => {
         }
 
         if (results.length > 0) {
-            // Successful login
             req.session.user = results[0];
             req.flash('success', 'Login successful!');
 
-            // Redirect based on user role
             if (req.session.user.accounttype === 'admin') {
-                return res.redirect('/country'); // change to your admin page
+                return res.redirect('/country');
             } else {
                 return res.redirect('/country');
             }
         } else {
-            // Invalid credentials
             req.flash('error', 'Invalid email or password.');
             return res.redirect('/login');
         }
@@ -163,9 +153,8 @@ app.get('/country', checkAuthenticated, (req, res) => {
 
         console.log("All countries:", results);
 
-        // ✅ `results` is an array of country objects
         res.render('country', { 
-            country: results,       // <-- passing the array
+            country: results,      
             user: req.session.user 
         });
         
@@ -173,19 +162,14 @@ app.get('/country', checkAuthenticated, (req, res) => {
 });
 
 app.get('/country/:id', checkAuthenticated, (req, res) => {
-  // Extract the destination ID from the request parameters
   const countryId = req.params.id;
 
-  // Fetch data from MySQL based on the destination ID
   connection.query('SELECT * FROM country WHERE countryId = ?', [countryId], (error, results) => {
       if (error) throw error;
 
-      // Check if any destination with the given ID was found
       if (results.length > 0) {
-          // Render HTML page with the destination data
           res.render('country', { country: results[0], user: req.session.user  });
       } else {
-          // If no destination with the given ID was found, render a 404 page or handle it accordingly
           res.status(404).send('country not found');
       }
   });
@@ -194,7 +178,6 @@ app.get('/country/:id', checkAuthenticated, (req, res) => {
 app.get('/country/:id/list', checkAuthenticated, (req, res) => {
     const countryId = req.params.id;
 
-    // Get both country info and its lists
     const countryQuery = 'SELECT * FROM country WHERE countryId = ?';
     const listQuery = `
         SELECT l.*, c.countryName, c.image AS countryImage
@@ -203,7 +186,6 @@ app.get('/country/:id/list', checkAuthenticated, (req, res) => {
         WHERE c.countryId = ?
     `;
 
-    // Get country details first
     connection.query(countryQuery, [countryId], (err, countryResults) => {
         if (err) throw err;
 
@@ -211,14 +193,13 @@ app.get('/country/:id/list', checkAuthenticated, (req, res) => {
             return res.status(404).send('Country not found');
         }
 
-        // Then get the list items
         connection.query(listQuery, [countryId], (err, listResults) => {
             if (err) throw err;
 
             res.render('list_user', {
                 user: req.session.user,
-                country: countryResults[0],  // single object
-                list: listResults            // array
+                country: countryResults[0],
+                list: listResults            
             });
         });
     });
@@ -226,7 +207,7 @@ app.get('/country/:id/list', checkAuthenticated, (req, res) => {
 
 app.post('/add-to-wishlist/:id', checkAuthenticated, (req, res) => {
     const destinationId = parseInt(req.params.id);
-    const quantity = parseInt(req.body.quantity) || 1; // Default to 1 if not specified
+    const quantity = parseInt(req.body.quantity) || 1;
 
     connection.query('SELECT * FROM destination WHERE destinationId = ?', [destinationId], (error, results) => {
         if (error) throw error;
@@ -234,12 +215,10 @@ app.post('/add-to-wishlist/:id', checkAuthenticated, (req, res) => {
         if (results.length > 0) {
             const destination = results[0];
 
-            // Initialize cart in session if not exists
             if (!req.session.wishlist) {
                 req.session.wishlist = [];
             }
 
-            // Check if destination already in cart
             const existingItem = req.session.wishlist.find(item => item.destinationId === destinationId);
             if (existingItem) {
                 existingItem.quantity += quantity;
@@ -269,7 +248,7 @@ app.get('/editWishlist/:id', (req, res) => {
             res.status(500).send('Error retrieving product by ID');
         }
         if (results.length > 0) {
-            res.render('editDestination', { product: results[0] }); // Render HTML page with product data
+            res.render('editDestination', { product: results[0] });
         } else {
             res.status(404).send('Destination not found');
         }
@@ -329,19 +308,14 @@ app.get('/logout', (req, res) => {
 
 
 app.get('/destination/:id', checkAuthenticated, (req, res) => {
-  // Extract the destination ID from the request parameters
   const listId = req.params.id;
 
-  // Fetch data from MySQL based on the destination ID
   connection.query('SELECT * FROM list WHERE listId = ?', [listId], (error, results) => {
       if (error) throw error;
 
-      // Check if any destination with the given ID was found
       if (results.length > 0) {
-          // Render HTML page with the destination data
           res.render('list', { list: results[0], user: req.session.user  });
       } else {
-          // If no destination with the given ID was found, render a 404 page or handle it accordingly
           res.status(404).send('list not found');
       }
   });
@@ -361,7 +335,7 @@ app.get('/list/:id/destinations', checkAuthenticated, (req, res) => {
 
     res.render('destination_user', {
       destinations: results,
-      user: req.session.user  // pass user info for the template if needed
+      user: req.session.user 
     });
   });
 });
@@ -375,7 +349,7 @@ app.get('/destination/:id/event', checkAuthenticated, (req, res) => {
     if (error) throw error;
 
     if (results.length > 0) {
-      res.render('event', { event: results[0], user: req.session.user }); // 👈 Make sure 'event' has all expected fields
+      res.render('event', { event: results[0], user: req.session.user });
     } else {
       res.status(404).send('Event not found');
     }
@@ -390,7 +364,7 @@ app.post('/addCountry', upload.single('image'), (req, res) => {
     const { name } = req.body;  
     let image;
     if (req.file) {
-        image = req.file.filename; // Save only the filename
+        image = req.file.filename; 
     } else {
         image = null;
     }
@@ -409,16 +383,12 @@ app.get('/updateCountry/:id',checkAuthenticated, checkAdmin, (req,res) => {
     const countryId = req.params.id;
     const sql = 'SELECT * FROM country WHERE countryId = ?';
 
-    // Fetch data from MySQL based on the product ID
     connection.query(sql , [countryId], (error, results) => {
         if (error) throw error;
 
-        // Check if any product with the given ID was found
         if (results.length > 0) {
-            // Render HTML page with the product data
             res.render('editCountry', { country: results[0] });
         } else {
-            // If no product with the given ID was found, render a 404 page or handle it accordingly
             res.status(404).send('Country not found');
         }
     });
@@ -426,47 +396,22 @@ app.get('/updateCountry/:id',checkAuthenticated, checkAdmin, (req,res) => {
 
 app.post('/updateCountry/:id', upload.single('image'), (req, res) => {
     const countryId = req.params.id;
-    // Extract product data from the request body
     const { countryName } = req.body;
-    let image  = req.body.currentImage; //retrieve current image filename
-    if (req.file) { //if new image is uploaded
-        image = req.file.filename; // set image to be new image filename
+    let image  = req.body.currentImage;
+    if (req.file) {
+        image = req.file.filename; 
     } 
 
     const sql = 'UPDATE country SET countryName = ? , image = ? WHERE countryId = ?';
-    // Insert the new product into the database
     connection.query(sql, [countryName, countryId], (error, results) => {
         if (error) {
-            // Handle any error that occurs during the database operation
             console.error("Error updating country:", error);
             res.status(500).send('Error updating country');
         } else {
-            // Send a success response
             res.redirect('/country');
         }
     });
 });
-
-// app.get('/country/:id/addList', checkAuthenticated, (req, res) => {
-//     const countryId = req.params.id;
-//     const sql = 'SELECT * FROM country WHERE countryId = ?';
-
-//     connection.query(sql, [countryId], (err, results) => {
-//         if (err) {
-//             console.error("Error fetching country:", err);
-//             return res.status(500).send("Error fetching country");
-//         }
-
-//         if (results.length === 0) {
-//             return res.status(404).send("Country not found");
-//         }
-
-//         res.render('addList', {
-//             user: req.session.user,
-//             country: results[0]
-//         });
-//     });
-// });
 
 app.get('/country/:id/addList', checkAuthenticated, (req, res) => {
     const countryId = req.params.id;
@@ -486,7 +431,7 @@ app.get('/country/:id/addList', checkAuthenticated, (req, res) => {
 app.post('/country/:id/list/addList', upload.single('image'), (req, res) => {
   const listName = req.body.listName;
   const image = req.file.filename;
-  const countryId = req.params.id; // 👈 this is how you get the country ID
+  const countryId = req.params.id;
 
   if (!countryId) {
     console.log("Country ID is missing");
@@ -499,45 +444,21 @@ app.post('/country/:id/list/addList', upload.single('image'), (req, res) => {
       console.error(err);
       return res.send("Database error.");
     }
-    res.redirect(`/country/${countryId}/list`); // redirect where you want
+    res.redirect(`/country/${countryId}/list`);
   });
 });
 
-
-// app.post('/addList', upload.single('image'), (req, res) => {
-//     const { name, countryId } = req.body;
-      
-//     let image;
-//     if (req.file) {
-//         image = req.file.filename; // Save only the filename
-//     } else {
-//         image = null;
-//     }
-
-//     const sql = 'INSERT INTO list (image, listName, countryId) VALUES (?, ?, ?)';
-//     connection.query(sql, [image, name, countryId], (err, results) => {
-//         if (err) {
-//             console.error("Error adding list:", err);
-//             return res.status(500).send('Error adding list');
-//         }
-//         res.redirect(`/country/${countryId}/list`);  
-//     });
-// });
 
 app.get('/updateList/:id',checkAuthenticated, checkAdmin, (req,res) => {
     const listId = req.params.id;
     const sql = 'SELECT * FROM list WHERE listId = ?';
 
-    // Fetch data from MySQL based on the product ID
     connection.query(sql , [listId], (error, results) => {
         if (error) throw error;
 
-        // Check if any product with the given ID was found
         if (results.length > 0) {
-            // Render HTML page with the product data
             res.render('editlist', { list: results[0] });
         } else {
-            // If no product with the given ID was found, render a 404 page or handle it accordingly
             res.status(404).send('list not found');
         }
     });
@@ -546,9 +467,9 @@ app.get('/updateList/:id',checkAuthenticated, checkAdmin, (req,res) => {
 app.post('/updateList/:id', upload.single('image'), (req, res) => {
     const listId = req.params.id;
     const { name, countryId } = req.body;
-    let image  = req.body.currentImage; // retrieve current image filename
+    let image  = req.body.currentImage;
 
-    if (req.file) { // if new image uploaded
+    if (req.file) {
         image = req.file.filename;
     }
 
@@ -572,7 +493,7 @@ app.post('/addDestination', upload.single('image'), (req, res) => {
     const { name } = req.body;  
     let image;
     if (req.file) {
-        image = req.file.filename; // Save only the filename
+        image = req.file.filename;
     } else {
         image = null;
     }
@@ -587,29 +508,6 @@ app.post('/addDestination', upload.single('image'), (req, res) => {
     });
 });
 
-// app.post('/addList', upload.single('image'),  (req, res) => {
-//     // Extract destination data from the request body
-//     const { name, quantity, price} = req.body;
-//     let image;
-//     if (req.file) {
-//         image = req.file.filename; // Save only the filename
-//     } else {
-//         image = null;
-//     }
-
-//     const sql = 'INSERT INTO destination (destinationName, quantity, price, image) VALUES (?, ?, ?, ?)';
-//     // Insert the new destination into the database
-//     connection.query(sql , [name, quantity, price, image], (error, results) => {
-//         if (error) {
-//             // Handle any error that occurs during the database operation
-//             console.error("Error adding destination:", error);
-//             res.status(500).send('Error adding destination');
-//         } else {
-//             // Send a success response
-//             res.redirect('/inventory');
-//         }
-//     });
-// });
 
 // app.get('/updateDestination/:id',checkAuthenticated, checkAdmin, (req,res) => {
 //     const destinationId = req.params.id;
