@@ -412,25 +412,46 @@ app.get('/addList', checkAuthenticated,  (req, res) => {
     res.render('addList', {user: req.session.user } ); 
 });
 
-app.post('/addList', upload.single('image'), (req, res) => {
-    const { name, countryId } = req.body;
-      
-    let image;
-    if (req.file) {
-        image = req.file.filename; // Save only the filename
-    } else {
-        image = null;
-    }
+app.post('/country/:id/addList', upload.single('image'), (req, res) => {
+  const { listName } = req.body;
+  const image = req.file.filename;
+  const countryId = req.params.id; // 👈 this is how you get the country ID
 
-    const sql = 'INSERT INTO list (image, listName, countryId) VALUES (?, ?, ?)';
-    connection.query(sql, [image, name, countryId], (err, results) => {
-        if (err) {
-            console.error("Error adding list:", err);
-            return res.status(500).send('Error adding list');
-        }
-        res.redirect(`/country/${countryId}/list`);  
-    });
+  if (!countryId) {
+    console.log("Country ID is missing");
+    return res.status(400).send("Country ID required");
+  }
+
+  const sql = 'INSERT INTO list (image, listName, countryId) VALUES (?, ?, ?)';
+  connection.query(sql, [image, listName, countryId], (err, results) => {
+    if (err) {
+      console.error(err);
+      return res.send("Database error.");
+    }
+    res.redirect(`/country/${countryId}/list`); // redirect where you want
+  });
 });
+
+
+// app.post('/addList', upload.single('image'), (req, res) => {
+//     const { name, countryId } = req.body;
+      
+//     let image;
+//     if (req.file) {
+//         image = req.file.filename; // Save only the filename
+//     } else {
+//         image = null;
+//     }
+
+//     const sql = 'INSERT INTO list (image, listName, countryId) VALUES (?, ?, ?)';
+//     connection.query(sql, [image, name, countryId], (err, results) => {
+//         if (err) {
+//             console.error("Error adding list:", err);
+//             return res.status(500).send('Error adding list');
+//         }
+//         res.redirect(`/country/${countryId}/list`);  
+//     });
+// });
 
 app.get('/addDestination', checkAuthenticated,  (req, res) => {
     res.render('addDestination', {user: req.session.user } ); 
