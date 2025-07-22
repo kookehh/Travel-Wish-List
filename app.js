@@ -399,7 +399,7 @@ app.post('/addCountry', upload.single('image'), (req, res) => {
     }
 
     const sql = 'INSERT INTO country (countryName, image) VALUES (?, ?)';
-    connection.query(sql, [name], (err, results) => {
+    connection.query(sql, [name, image], (err, results) => {
         if (err) {
             console.error("Error adding country:", err);
             return res.status(500).send('Error adding country');
