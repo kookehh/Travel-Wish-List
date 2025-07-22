@@ -40,6 +40,9 @@
             <h5 class="card-title"><%= list.listName %></h5>
             <p class="card-text">Country: <%= list.countryName %></p>
             <a href="/list/<%= list.listId %>/destinations" class="btn btn-primary">View Destinations</a>
+            <% if (user && user.accounttype === 'admin') { %>
+              <a href="/updateList/<%= list.listId %>" class="btn btn-warning mt-2">Edit</a>
+            <% } %>
           </div>
         </div>
       </div>

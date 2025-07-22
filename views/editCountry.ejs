@@ -18,7 +18,7 @@
       <div class="collapse navbar-collapse" id="collapsibleNavbar">
         <ul class="navbar-nav">
           <li class="nav-item">
-            <a class="nav-link" href="/touristsite">Tourist Site</a>
+            <a class="nav-link" href="/list">Tourist Site</a>
           </li> 
           <li class="nav-item">
             <a class="nav-link" href="/addCountry">Add Country</a>
@@ -33,21 +33,25 @@
 
   <!-- Main Content -->
   <div class="container mt-4">
-    <h2 class="text-center mb-4">Add New Country</h2>
-    <form action="/editCountry/" method="POST" enctype="multipart/form-data" class="mx-auto" style="max-width: 500px;">
+    <h2 class="text-center mb-4">Update Country</h2>
+    <form action="/updateCountry/<=% country.countryId %>" method="POST" enctype="multipart/form-data" class="mx-auto" style="max-width: 500px;">
 
+      <div class="mb-3">
+          <img src="/images/<%= country.image %>" class="img-thumbnail mt-2" style="width: 150px;">
+      </div>
+        
       <div class="mb-4">
         <label for="image" class="form-label">Country Image</label>
-        <input class="form-control" type="file" id="image" name="image" accept="image/*" required>
+        <input class="form-control" type="file" id="image" name="image" value="<%= country.image %> accept="image/*" required>
       </div>
 
       <div class="mb-3">
         <label for="name" class="form-label">Country Name</label>
-        <input type="text" class="form-control" id="name" name="name" required>
+        <input type="text" class="form-control" id="name" name="name" value="<%= country.countryName %>" required>
       </div>
 
       <div class="d-grid">
-        <button type="submit" class="btn btn-primary">Add Country</button>
+        <button type="submit" class="btn btn-primary">Update Country</button>
       </div>
 
     </form>

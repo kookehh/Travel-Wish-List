@@ -69,7 +69,7 @@ const checkAuthenticated = (req, res, next) => {
 
 // Middleware to check if user is admin
 const checkAdmin = (req, res, next) => {
-    if (req.session.user.role === 'admin') {
+    if (req.session.user.accounttype === 'admin') {
         return next();
     } else {
         req.flash('error', 'Access denied');
@@ -399,12 +399,54 @@ app.post('/addCountry', upload.single('image'), (req, res) => {
     }
 
     const sql = 'INSERT INTO country (countryName, image) VALUES (?, ?)';
-    connection.query(sql, [name, image], (err, results) => {
+    connection.query(sql, [name], (err, results) => {
         if (err) {
             console.error("Error adding country:", err);
             return res.status(500).send('Error adding country');
         }
         res.redirect('/country');  
+    });
+});
+
+app.get('/updateCountry/:id',checkAuthenticated, checkAdmin, (req,res) => {
+    const countryId = req.params.id;
+    const sql = 'SELECT * FROM country WHERE countryId = ?';
+
+    // Fetch data from MySQL based on the product ID
+    connection.query(sql , [countryId], (error, results) => {
+        if (error) throw error;
+
+        // Check if any product with the given ID was found
+        if (results.length > 0) {
+            // Render HTML page with the product data
+            res.render('editCountry', { country: results[0] });
+        } else {
+            // If no product with the given ID was found, render a 404 page or handle it accordingly
+            res.status(404).send('Country not found');
+        }
+    });
+});
+
+app.post('/updateCountry/:id', upload.single('image'), (req, res) => {
+    const countryId = req.params.id;
+    // Extract product data from the request body
+    const { countryName } = req.body;
+    let image  = req.body.currentImage; //retrieve current image filename
+    if (req.file) { //if new image is uploaded
+        image = req.file.filename; // set image to be new image filename
+    } 
+
+    const sql = 'UPDATE country SET countryName = ? , image = ? WHERE countryId = ?';
+    // Insert the new product into the database
+    connection.query(sql, [countryName, countryId], (error, results) => {
+        if (error) {
+            // Handle any error that occurs during the database operation
+            console.error("Error updating country:", error);
+            res.status(500).send('Error updating country');
+        } else {
+            // Send a success response
+            res.redirect('/country');
+        }
     });
 });
 
@@ -452,6 +494,46 @@ app.post('/country/:id/addList', upload.single('image'), (req, res) => {
 //         res.redirect(`/country/${countryId}/list`);  
 //     });
 // });
+
+app.get('/updateList/:id',checkAuthenticated, checkAdmin, (req,res) => {
+    const listId = req.params.id;
+    const sql = 'SELECT * FROM list WHERE listId = ?';
+
+    // Fetch data from MySQL based on the product ID
+    connection.query(sql , [listId], (error, results) => {
+        if (error) throw error;
+
+        // Check if any product with the given ID was found
+        if (results.length > 0) {
+            // Render HTML page with the product data
+            res.render('editlist', { list: results[0] });
+        } else {
+            // If no product with the given ID was found, render a 404 page or handle it accordingly
+            res.status(404).send('list not found');
+        }
+    });
+});
+
+app.post('/updateList/:id', upload.single('image'), (req, res) => {
+    const listId = req.params.id;
+    const { name, countryId } = req.body;
+    let image  = req.body.currentImage; // retrieve current image filename
+
+    if (req.file) { // if new image uploaded
+        image = req.file.filename;
+    }
+
+    const sql = 'UPDATE list SET image = ?, listName = ?, countryId = ? WHERE listId = ?';
+
+    connection.query(sql, [image, name, countryId, listId], (error, results) => {
+        if (error) {
+            console.error("Error updating List:", error);
+            return res.status(500).send('Error updating List');
+        }
+        res.redirect(`/country/${countryId}/list`);
+    });
+});
+
 
 app.get('/addDestination', checkAuthenticated,  (req, res) => {
     res.render('addDestination', {user: req.session.user } ); 
