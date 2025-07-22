@@ -450,9 +450,6 @@ app.post('/updateCountry/:id', upload.single('image'), (req, res) => {
     });
 });
 
-app.get('/addList', checkAuthenticated,  (req, res) => {
-    res.render('addList', {user: req.session.user } ); 
-});
 
 app.post('/country/:id/addList', upload.single('image'), (req, res) => {
   const { listName } = req.body;
