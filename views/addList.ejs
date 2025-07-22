@@ -34,23 +34,27 @@
   <!-- Main Content -->
   <div class="container mt-4">
     <h2 class="text-center mb-4">Add New List</h2>
-    <form action="/country/<%= country.countryId %>/list/addList" method="POST" enctype="multipart/form-data" class="mx-auto" style="max-width: 500px;">
+    <% if (country) { %>
+  <form action="/country/<%= country.countryId %>/list/addList" method="POST" enctype="multipart/form-data" class="mx-auto" style="max-width: 500px;">
 
-      <div class="mb-4">
-        <label for="image" class="form-label">List Image</label>
-        <input class="form-control" type="file" id="image" name="image" accept="image/*" required>
-      </div>
+    <div class="mb-4">
+      <label for="image" class="form-label">List Image</label>
+      <input class="form-control" type="file" id="image" name="image" accept="image/*" required>
+    </div>
 
-      <div class="mb-3">
-        <label for="name" class="form-label">List name</label>
-        <input type="text" class="form-control" id="listName" name="name" required>
-      </div>
+    <div class="mb-3">
+      <label for="name" class="form-label">List name</label>
+      <input type="text" class="form-control" id="listName" name="listName" required>
+    </div>
 
-      <div class="d-grid">
-        <button type="submit" class="btn btn-primary">Add list</button>
-      </div>
+    <div class="d-grid">
+      <button type="submit" class="btn btn-primary">Add list</button>
+    </div>
 
-    </form>
+  </form>
+    <% } else { %>
+      <div class="alert alert-danger">No country selected. Please access this page from a country page.</div>
+    <% } %>
   </div>
 </body>
 </html>
