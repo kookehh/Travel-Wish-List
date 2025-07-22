@@ -488,7 +488,7 @@ app.get('/country/:id/addList', checkAuthenticated, (req, res) => {
 });
 
 app.post('/country/:id/list/addList', upload.single('image'), (req, res) => {
-  const listName = req.body.name;
+  const listName = req.body.listName;
   const image = req.file.filename;
   const countryId = req.params.id; // 👈 this is how you get the country ID
 
