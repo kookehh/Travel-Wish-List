@@ -588,20 +588,35 @@ app.post('/list/:id/destinations/addDestination', upload.single('image'), (req, 
 //     });
 // });
 
-// app.get('/deleteWishlist/:id', (req, res) => {
-//     const destinationId = req.params.id;
+app.get('/deleteWishlist/:id', (req, res) => {
+    const wishlistId = req.params.id;
+    const sql = 'DELETE FROM wishlist WHERE wishlistId = ?';
+    connection.query(sql, [wishlistId], (error, results) => {
+        if (error) {
+            // Handle any error that occurs during the database operation
+            console.error("Error deleting wishlist:", error);
+            res.status(500).send('Error deleting wishlist');
+        } else {
+            // Send a success response
+            res.redirect('/wishlist');
+        }
+    });
+});
 
-//     connection.query('DELETE FROM destination WHERE destinationId = ?', [destinationId], (error, results) => {
-//         if (error) {
-//             // Handle any error that occurs during the database operation
-//             console.error("Error deleting destination:", error);
-//             res.status(500).send('Error deleting destination');
-//         } else {
-//             // Send a success response
-//             res.redirect('/inventory');
-//         }
-//     });
-// });
+app.post('/wishlist/delete/:id', checkAuthenticated, (req, res) => {
+    const wishlistId = req.params.id;
+
+    const sql = 'DELETE FROM wishlist WHERE wishlistId = ?';
+    connection.query(sql, [wishlistId], (error, results) => {
+        if (error) {
+            console.error("Error deleting wishlist:", error);
+            return res.status(500).send('Error deleting wishlist');
+        }
+        res.redirect('/wishlist');
+    });
+});
+
+
 
 // app.get('/deleteDestination/:id', (req, res) => {
 //     const destinationId = req.params.id;
