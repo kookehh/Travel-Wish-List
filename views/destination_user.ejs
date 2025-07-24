@@ -17,8 +17,8 @@
       padding-top: 80px;
     }
 
-    .navbar {
-      background-color: #212529 !important;
+    .navbar-purple {
+      background-color: #a974bf !important; 
     }
 
     .navbar-brand {
@@ -27,9 +27,13 @@
       color: #fff !important;
     }
 
-    .nav-link,
-    .btn-success {
+    .nav-link {
       color: #fff !important;
+      font-weight: 500;
+    }
+
+    .nav-link:hover {
+      text-decoration: underline;
     }
 
     h2 {
@@ -101,8 +105,7 @@
 
 <body>
 
-
-  <nav class="navbar navbar-expand-sm navbar-dark bg-dark fixed-top">
+  <nav class="navbar navbar-expand-sm navbar-purple fixed-top">
     <div class="container-fluid">
       <a class="navbar-brand" href="/">Travel Wishlist</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#collapsibleNavbar">
@@ -112,7 +115,7 @@
         <ul class="navbar-nav ms-auto">
           <% if (user && user.accounttype === 'admin') { %>
             <li class="nav-item">
-              <a href="/list/<%= list.listId %>/addDestination" class="btn btn-success me-3 mt-2">Add Destination</a>
+              <a class="nav-link" href="/list/<%= list.listId %>/addDestination">Add Destination</a>
             </li>
           <% } %>
           <li class="nav-item">
