@@ -148,6 +148,9 @@
                 </form>
 
                 <a href="/destination/<%= dest.destinationId %>/event" class="btn btn-info w-100 mt-2">View Details</a>
+                <% if (user && user.accounttype === 'admin') { %>
+                  <a href="/deleteDestination/<%= dest.destinationId %>" class="btn btn-warning mt-2 d-block">Delete</a>
+                <% } %>
               </div>
             </div>
           </div>

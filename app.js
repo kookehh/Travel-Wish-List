@@ -644,6 +644,34 @@ app.post('/country/delete/:id', checkAuthenticated, (req, res) => {
     });
 });
 
+// app.get('/deleteDestination/:id', (req, res) => {
+//     const destinationId = req.params.id;
+//     const sql = 'DELETE FROM destination WHERE destinationId = ?';
+//     connection.query(sql, [destinationId], (error, results) => {
+//         if (error) {
+//             // Handle any error that occurs during the database operation
+//             console.error("Error deleting destination:", error);
+//             res.status(500).send('Error deleting destination');
+//         } else {
+//             // Send a success response
+//             res.redirect(`${listId}/destinations/deleteDestination`);
+//         }
+//     });
+// });
+
+// app.post('/destination/delete/:id', checkAuthenticated, (req, res) => {
+//     const destinationId = req.params.id;
+
+//     const sql = 'DELETE FROM destination WHERE destinationId = ?';
+//     connection.query(sql, [destinationId], (error, results) => {
+//         if (error) {
+//             console.error("Error deleting country:", error);
+//             return res.status(500).send('Error deleting destination');
+//         }
+//         res.redirect(`${listId}/destinations/delete`);
+//     });
+// });
+
 // app.get('/deleteList/:id', (req, res) => {
 //     const listId = req.params.listId;
 //     const countryId = req.body.countryId; // Assuming you pass countryId in the form
