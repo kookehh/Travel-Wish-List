@@ -46,6 +46,7 @@
               <a href="/country/<%= c.countryId %>/list" class="btn btn-primary">View Lists</a>
               <% if (user && user.accounttype === 'admin') { %>
               <a href="/updateCountry/<%= c.countryId %>" class="btn btn-warning mt-2">Edit</a>
+              <a href="/deleteCountry/<%= c.countryId %>" class="btn btn-warning mt-2">Delete</a>
               <% } %>
             </div>
           </div>
