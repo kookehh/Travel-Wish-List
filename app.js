@@ -644,33 +644,77 @@ app.post('/country/delete/:id', checkAuthenticated, (req, res) => {
     });
 });
 
-app.get('/deleteList/:id', (req, res) => {
-    const listId = req.params.id;
-    const sql = 'DELETE FROM list WHERE listId = ?';
-    connection.query(sql, [listId], (error, results) => {
-        if (error) {
-            // Handle any error that occurs during the database operation
-            console.error("Error deleting list:", error);
-            res.status(500).send('Error deleting list');
-        } else {
-            // Send a success response
-            res.redirect('/list');
-        }
-    });
-});
+// app.get('/deleteList/:id', (req, res) => {
+//     const listId = req.params.listId;
+//     const countryId = req.body.countryId; // Assuming you pass countryId in the form
+//     const sql = 'DELETE FROM list WHERE countryId = ?';
+//     connection.query(sql, [listId, countryId], (error, results) => {
+//         if (error) {
+//             // Handle any error that occurs during the database operation
+//             console.error("Error deleting list:", error);
+//             res.status(500).send('Error deleting list');
+//         } else {
+//             // Send a success response
+//             res.redirect(`/country/${countryId}/list`);
+//         }
+//     });
+// });
 
-app.post('/list/delete/:id', checkAuthenticated, (req, res) => {
-    const listId = req.params.id;
+// app.post('/deleteList/:id', checkAuthenticated, (req, res) => {
+//   const listId = req.params.listId;
+//   const countryId = req.body.countryId; // Assuming you pass countryId in the form
 
-    const sql = 'DELETE FROM list WHERE listId = ?';
-    connection.query(sql, [listId], (error, results) => {
-        if (error) {
-            console.error("Error deleting list:", error);
-            return res.status(500).send('Error deleting list');
-        }
-        res.redirect('/list');
-    });
-});
+//   const sql = 'DELETE FROM list WHERE countryId = ?';
+//   connection.query(sql, [listId], (err, results) => {
+//     if (err) {
+//       console.error('Error deleting list:', err);
+//       return res.status(500).send('Database error');
+//     }
+//     res.redirect(`/country/${countryId}/list`); // or replace with a specific URL like /country/:id/list
+//   });
+// });
+
+
+// app.post('/deleteList/:id', checkAuthenticated, (req, res) => {
+//   const id = req.params.id;
+
+//   const sql = 'DELETE FROM list WHERE listId = ?';
+//   connection.query(sql, [id], (err, results) => {
+//     if (err) {
+//       console.error('Error deleting list:', err);
+//       return res.status(500).send('Server error');
+//     }
+//     res.redirect('/list'); // or wherever your list page is
+//   });
+// });
+
+
+// app.post('/deleteList/:id', checkAuthenticated, (req, res) => {
+//   const id = req.params.id;
+
+//   const sql = 'DELETE FROM list WHERE listId = ?';
+//   connection.query(sql, [id], (err, results) => {
+//     if (err) {
+//       console.error('Error deleting list:', err);
+//       return res.status(500).send('Server error');
+//     }
+//     res.redirect('/list'); // or wherever your list page is
+//   });
+// });
+
+
+// app.post('/list/delete/:id', checkAuthenticated, (req, res) => {
+//     const listId = req.params.id;
+
+//     const sql = 'DELETE FROM list WHERE listId = ?';
+//     connection.query(sql, [listId], (error, results) => {
+//         if (error) {
+//             console.error("Error deleting list:", error);
+//             return res.status(500).send('Error deleting list');
+//         }
+//         res.redirect('/list');
+//     });
+// });
 
 // app.get('/deleteDestination/:id', (req, res) => {
 //     const destinationId = req.params.id;
