@@ -41,8 +41,7 @@
               <img src="/images/<%= result.image %>" class="card-img-top" alt="<%= result.destinationName %>">
               <div class="card-body">
                 <h5 class="card-title"><%= result.destinationName %></h5>
-                <p class="card-text"><%= result.description %></p>
-                <p class="card-text"><strong>Price:</strong> $<%= result.price %></p>
+                <a href="/country/<%= country.countryId %>/list" class="btn btn-primary">View Lists</a>
               </div>
             </div>
           </div>
