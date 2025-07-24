@@ -618,5 +618,14 @@ app.post('/list/:id/destinations/addDestination', upload.single('image'), (req, 
 //     });
 // });
 
+app.get('/search', (req, res) => {
+  const searchTerm = req.query.q;
+  const sql = "SELECT * FROM destination WHERE destinationName LIKE ?";
+  connection.query(sql, [`%${searchTerm}%`], (err, results) => {
+    if (err) throw err;
+    res.render('search', { results, user: req.session.user, searchTerm });
+  });
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
