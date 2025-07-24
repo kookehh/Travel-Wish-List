@@ -16,10 +16,7 @@
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="collapsibleNavbar">
-        <ul class="navbar-nav">
-          <li class="nav-item">
-            <a class="nav-link" href="/touristsite">Tourist Site</a>
-          </li> 
+        <ul class="navbar-nav"> 
           <li class="nav-item">
             <a class="nav-link" href="/logout">Logout</a>
           </li> 
@@ -31,7 +28,7 @@
   <!-- Main Content -->
   <div class="container mt-4">
     <h2 class="text-center mb-4">Add New Destination</h2>
-    <form action="/addDestination" method="POST" enctype="multipart/form-data" class="mx-auto" style="max-width: 500px;">
+    <form action="/list/<%= list.listId %>/destinations/addDestination" method="POST" enctype="multipart/form-data" class="mx-auto" style="max-width: 500px;">
 
       <div class="mb-4">
         <label for="image" class="form-label">Destination Image</label>

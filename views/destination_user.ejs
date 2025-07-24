@@ -17,9 +17,7 @@
         <div class="collapse navbar-collapse" id="collapsibleNavbar">
           <ul class="navbar-nav">
             <% if (user && user.accounttype === 'admin') { %>
-              <li class="nav-item">
-                <a class="nav-link" href="/addDestination">Add Destination</a>
-              </li>
+              <a href="/list/<%= list.listId %>/addDestination" class="btn btn-success mt-2">Add Destination</a>
             <% } %>
             <li class="nav-item">
               <a class="nav-link" href="/logout">Logout</a>
@@ -45,7 +43,7 @@
                 <p class="card-text"><strong>Price:</strong> $<%= dest.price.toFixed(2) %></p>
 
                 <form action="/wishlist/<%= dest.destinationId %>" method="POST" class="mt-auto">
-                  <input type="hidden" name="destination" value="1" />
+                  <input type="hidden" name="destinationName" value="1" />
                   <button type="submit" class="btn btn-primary w-100">Add to Wishlist</button>
                 </form>
                 <a href="/destination/<%= dest.destinationId %>/event" class="btn btn-info w-100 mt-2">View Details</a>

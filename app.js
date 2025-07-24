@@ -335,7 +335,8 @@ app.get('/list/:id/destinations', checkAuthenticated, (req, res) => {
 
     res.render('destination_user', {
       destinations: results,
-      user: req.session.user 
+      user: req.session.user,
+      list: { listId: req.params.id },  
     });
   });
 });
@@ -485,29 +486,65 @@ app.post('/updateList/:id', upload.single('image'), (req, res) => {
 });
 
 
-app.get('/addDestination', checkAuthenticated,  (req, res) => {
-    res.render('addDestination', {user: req.session.user } ); 
-});
+// app.get('/addDestination', checkAuthenticated,  (req, res) => {
+//     res.render('addDestination', {user: req.session.user } ); 
+// });
 
-app.post('/addDestination', upload.single('image'), (req, res) => {
-    const { name } = req.body;  
-    let image;
-    if (req.file) {
-        image = req.file.filename;
-    } else {
-        image = null;
-    }
+// app.post('/addDestination', upload.single('image'), (req, res) => {
+//     const { name } = req.body;  
+//     let image;
+//     if (req.file) {
+//         image = req.file.filename;
+//     } else {
+//         image = null;
+//     }
 
-    const sql = 'INSERT INTO destination (image, DestinationName, price, description) VALUES (?, ?, ?, ?)';
-    connection.query(sql, [image, name, price, description], (err, results) => {
-        if (err) {
-            console.error("Error adding list:", err);
-            return res.status(500).send('Error adding list');
-        }
-        res.redirect('/addDestination');  
+//     const sql = 'INSERT INTO destination (image, DestinationName, price, description) VALUES (?, ?, ?, ?)';
+//     connection.query(sql, [image, name, price, description], (err, results) => {
+//         if (err) {
+//             console.error("Error adding list:", err);
+//             return res.status(500).send('Error adding list');
+//         }
+//         res.redirect('/addDestination');  
+//     });
+// });
+
+app.get('/list/:id/addDestination', checkAuthenticated, (req, res) => {
+    const listId = req.params.id;
+    const sql = 'SELECT * FROM list WHERE listId = ?';
+
+    connection.query(sql, [listId], (err, results) => {
+        if (err) return res.status(500).send('DB error');
+        if (results.length === 0) return res.status(404).send('List not found');
+
+        res.render('addDestination', {
+            user: req.session.user,
+            country: results[0]
+        });
     });
 });
 
+app.post('/list/:id/destinations/addDestination', upload.single('image'), (req, res) => {
+    const destinationName = req.body.destinationName;
+    const image = req.file.filename;
+    const listId = req.params.id;
+    const price = req.body.price;
+    const description = req.body.description;
+
+  if (!listId) {
+    console.log("List ID is missing");
+    return res.status(400).send("List ID required");
+  }
+
+  const sql = 'INSERT INTO destination (image, destinationName, price, description, listId) VALUES (?, ?, ?, ?, ?, ?)';
+  connection.query(sql, [image, destinationName, price, description, listId], (err, results) => {
+    if (err) {
+      console.error(err);
+      return res.send("Database error.");
+    }
+    res.redirect(`/list/${listId}/destinations`);
+  });
+});
 
 // app.get('/updateDestination/:id',checkAuthenticated, checkAdmin, (req,res) => {
 //     const destinationId = req.params.id;
