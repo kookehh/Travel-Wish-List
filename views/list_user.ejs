@@ -41,6 +41,7 @@
             <a href="/list/<%= list.listId %>/destinations" class="btn btn-primary">View Destinations</a>
             <% if (user && user.accounttype === 'admin') { %>
               <a href="/updateList/<%= list.listId %>" class="btn btn-warning mt-2">Edit</a>
+              <a href="/deleteList/<%= list.listId %>" class="btn btn-warning mt-2">Delete</a>
             <% } %>
           </div>
         </div>

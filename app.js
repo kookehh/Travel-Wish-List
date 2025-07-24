@@ -616,7 +616,61 @@ app.post('/wishlist/delete/:id', checkAuthenticated, (req, res) => {
     });
 });
 
+app.get('/deleteCountry/:id', (req, res) => {
+    const countryId = req.params.id;
+    const sql = 'DELETE FROM country WHERE countryId = ?';
+    connection.query(sql, [countryId], (error, results) => {
+        if (error) {
+            // Handle any error that occurs during the database operation
+            console.error("Error deleting country:", error);
+            res.status(500).send('Error deleting country');
+        } else {
+            // Send a success response
+            res.redirect('/country');
+        }
+    });
+});
 
+app.post('/country/delete/:id', checkAuthenticated, (req, res) => {
+    const countryId = req.params.id;
+
+    const sql = 'DELETE FROM country WHERE countryId = ?';
+    connection.query(sql, [countryId], (error, results) => {
+        if (error) {
+            console.error("Error deleting country:", error);
+            return res.status(500).send('Error deleting country');
+        }
+        res.redirect('/country');
+    });
+});
+
+app.get('/deleteList/:id', (req, res) => {
+    const listId = req.params.id;
+    const sql = 'DELETE FROM list WHERE listId = ?';
+    connection.query(sql, [listId], (error, results) => {
+        if (error) {
+            // Handle any error that occurs during the database operation
+            console.error("Error deleting list:", error);
+            res.status(500).send('Error deleting list');
+        } else {
+            // Send a success response
+            res.redirect('/list');
+        }
+    });
+});
+
+app.post('/list/delete/:id', checkAuthenticated, (req, res) => {
+    const listId = req.params.id;
+
+    const sql = 'DELETE FROM list WHERE listId = ?';
+    connection.query(sql, [listId], (error, results) => {
+        if (error) {
+            console.error("Error deleting list:", error);
+            return res.status(500).send('Error deleting list');
+        }
+        res.redirect('/list');
+    });
+});
 
 // app.get('/deleteDestination/:id', (req, res) => {
 //     const destinationId = req.params.id;
