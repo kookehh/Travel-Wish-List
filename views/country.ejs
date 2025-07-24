@@ -30,7 +30,12 @@
       </div>
   </nav>
   <div class="container mt-5">
-    <h2 class="text-center">Countries</h2>
+    <h2 class="text-center">Countries</h2><br>
+    <form class="d-flex" action="/search" method="get">
+        <input class="form-control me-2" type="search" name="q" placeholder="Search destinations..." aria-label="Search">
+        <button class="btn btn-outline-success" type="submit">Search</button>
+    </form>
+    <br>
     <div class="row mt-4">
       <% country.forEach(c => { %>
         <div class="col-md-4 mb-4">
