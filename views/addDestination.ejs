@@ -28,7 +28,8 @@
   <!-- Main Content -->
   <div class="container mt-4">
     <h2 class="text-center mb-4">Add New Destination</h2>
-    <form action="/list/<%= list.listId %>/destinations/addDestination" method="POST" enctype="multipart/form-data" class="mx-auto" style="max-width: 500px;">
+    <% if (list) { %>
+  <form action="/list/<%= list.listId %>/destinations/addDestination" method="POST" enctype="multipart/form-data" class="mx-auto" style="max-width: 500px;">
 
       <div class="mb-4">
         <label for="image" class="form-label">Destination Image</label>
@@ -37,7 +38,7 @@
 
       <div class="mb-3">
         <label for="name" class="form-label">Destination Name</label>
-        <input type="text" class="form-control" id="name" name="name" required>
+        <input type="text" class="form-control" id="destinationName" name="destinationName" required>
       </div>
 
       <div class="mb-3">
@@ -53,7 +54,9 @@
       <div class="d-grid">
         <button type="submit" class="btn btn-primary">Add Destination</button>
       </div>
-
+    <% } else { %>
+      <div class="alert alert-danger">No country selected. Please access this page from a country page.</div>
+    <% } %>
     </form>
   </div>
 </body>

@@ -519,7 +519,7 @@ app.get('/list/:id/addDestination', checkAuthenticated, (req, res) => {
 
         res.render('addDestination', {
             user: req.session.user,
-            country: results[0]
+            list: results[0]
         });
     });
 });
@@ -536,7 +536,7 @@ app.post('/list/:id/destinations/addDestination', upload.single('image'), (req, 
     return res.status(400).send("List ID required");
   }
 
-  const sql = 'INSERT INTO destination (image, destinationName, price, description, listId) VALUES (?, ?, ?, ?, ?, ?)';
+  const sql = 'INSERT INTO destination (image, destinationName, price, description, listId) VALUES (?, ?, ?, ?, ?)';
   connection.query(sql, [image, destinationName, price, description, listId], (err, results) => {
     if (err) {
       console.error(err);
