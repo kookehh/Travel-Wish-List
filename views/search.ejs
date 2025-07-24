@@ -38,10 +38,10 @@
         <% results.forEach(result => { %>
           <div class="col-md-4">
             <div class="card mb-3">
-              <img src="/images/<%= result.image %>" class="card-img-top" alt="<%= result.destinationName %>">
+              <img src="/images/<%= result.image %>" class="card-img-top" alt="<%= result.countryName %>">
               <div class="card-body">
-                <h5 class="card-title"><%= result.destinationName %></h5>
-                <a href="/country/<%= country.countryId %>/list" class="btn btn-primary">View Lists</a>
+                <h5 class="card-title"><%= result.countryName %></h5>
+                <a href="/country/<%= result.countryId %>/list" class="btn btn-primary">View Lists</a>
               </div>
             </div>
           </div>

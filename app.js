@@ -761,7 +761,8 @@ app.post('/country/delete/:id', checkAuthenticated, (req, res) => {
 
 app.get('/search', (req, res) => {
   const searchTerm = req.query.q;
-  const sql = "SELECT * FROM destination WHERE destinationName LIKE ?";
+  const countryId = req.query.countryId;
+  const sql = "SELECT * FROM country WHERE countryName LIKE ?";
   connection.query(sql, [`%${searchTerm}%`], (err, results) => {
     if (err) throw err;
     res.render('search', { results, user: req.session.user, searchTerm });
