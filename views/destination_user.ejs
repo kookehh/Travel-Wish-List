@@ -90,6 +90,25 @@
       background-color: #f8839e;
     }
 
+    .btn-warning {
+      background-color: #ffb347;
+      border: none;
+      color: #fff;
+    }
+
+    .btn-warning:hover {
+      background-color: #e29e38;
+    }
+
+    .btn-danger {
+      background-color: #f67280;
+      border: none;
+    }
+
+    .btn-danger:hover {
+      background-color: #e45766;
+    }
+
     .btn-back {
       background-color: #c77d8e;
       color: #fff;
@@ -148,6 +167,13 @@
                 </form>
 
                 <a href="/destination/<%= dest.destinationId %>/event" class="btn btn-info w-100 mt-2">View Details</a>
+
+                <% if (user && user.accounttype === 'admin') { %>
+                  <a href="/list/<%= list.listId %>/destinations/<%= dest.destinationId %>/edit" class="btn btn-warning mt-2 d-block">Edit</a>
+                  <a href="/list/<%= list.listId %>/destinations/<%= dest.destinationId %>/delete" 
+                     onclick="return confirm('Are you sure you want to delete this destination?')" 
+                     class="btn btn-danger mt-2 d-block">Delete</a>
+                <% } %>
               </div>
             </div>
           </div>

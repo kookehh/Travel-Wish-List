@@ -143,7 +143,7 @@ app.post('/login', (req, res) => {
         } else {
             req.flash('error', 'Invalid email or password.');
             return res.redirect('/login');
-        }
+        } 
     });
 });
 
@@ -157,7 +157,6 @@ app.get('/country', checkAuthenticated, (req, res) => {
             country: results,      
             user: req.session.user 
         });
-        
     });
 });
 
@@ -467,7 +466,7 @@ app.get('/updateList/:id',checkAuthenticated, checkAdmin, (req,res) => {
 
 app.post('/updateList/:id', upload.single('image'), (req, res) => {
     const listId = req.params.id;
-    const { name, countryId } = req.body;
+    const { name , countryId } = req.body;
     let image  = req.body.currentImage;
 
     if (req.file) {
@@ -538,6 +537,41 @@ app.post('/list/:id/destinations/addDestination', upload.single('image'), (req, 
 
   const sql = 'INSERT INTO destination (image, destinationName, price, description, listId) VALUES (?, ?, ?, ?, ?)';
   connection.query(sql, [image, destinationName, price, description, listId], (err, results) => {
+    if (err) {
+      console.error(err);
+      return res.send("Database error.");
+    }
+    res.redirect(`/list/${listId}/destinations`);
+  });
+});
+
+
+app.get('/list/:listId/destinations/:destinationId/edit', checkAuthenticated, (req, res) => {
+  const { listId, destinationId } = req.params;
+
+  const sql = 'SELECT * FROM destination WHERE destinationId = ? AND listId = ?';
+  connection.query(sql, [destinationId, listId], (err, results) => {
+    if (err) return res.status(500).send('DB error');
+    if (results.length === 0) return res.status(404).send('Destination not found');
+
+    res.render('editDestination', {
+      user: req.session.user,
+      destination: results[0]
+    });
+  });
+});
+
+app.post('/list/:listId/destinations/:destinationId/edit', upload.single('image'), (req, res) => {
+  const { listId, destinationId } = req.params;
+  const { destinationName, price, description } = req.body;
+
+  let image = req.body.currentImage; // default to current image
+  if (req.file) {
+    image = req.file.filename; // replace if a new one is uploaded
+  }
+
+  const sql = 'UPDATE destination SET image = ?, destinationName = ?, price = ?, description = ? WHERE destinationId = ? AND listId = ?';
+  connection.query(sql, [image, destinationName, price, description, destinationId, listId], (err, results) => {
     if (err) {
       console.error(err);
       return res.send("Database error.");
@@ -644,6 +678,34 @@ app.post('/country/delete/:id', checkAuthenticated, (req, res) => {
     });
 });
 
+// app.get('/deleteDestination/:id', (req, res) => {
+//     const destinationId = req.params.id;
+//     const sql = 'DELETE FROM destination WHERE destinationId = ?';
+//     connection.query(sql, [destinationId], (error, results) => {
+//         if (error) {
+//             // Handle any error that occurs during the database operation
+//             console.error("Error deleting destination:", error);
+//             res.status(500).send('Error deleting destination');
+//         } else {
+//             // Send a success response
+//             res.redirect(`${listId}/destinations/deleteDestination`);
+//         }
+//     });
+// });
+
+// app.post('/destination/delete/:id', checkAuthenticated, (req, res) => {
+//     const destinationId = req.params.id;
+
+//     const sql = 'DELETE FROM destination WHERE destinationId = ?';
+//     connection.query(sql, [destinationId], (error, results) => {
+//         if (error) {
+//             console.error("Error deleting country:", error);
+//             return res.status(500).send('Error deleting destination');
+//         }
+//         res.redirect(`${listId}/destinations/delete`);
+//     });
+// });
+
 // app.get('/deleteList/:id', (req, res) => {
 //     const listId = req.params.listId;
 //     const countryId = req.body.countryId; // Assuming you pass countryId in the form
@@ -740,6 +802,8 @@ app.get('/search', (req, res) => {
     res.render('search', { results, user: req.session.user, searchTerm });
   });
 });
+
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
