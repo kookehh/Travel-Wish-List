@@ -143,7 +143,7 @@ app.post('/login', (req, res) => {
         } else {
             req.flash('error', 'Invalid email or password.');
             return res.redirect('/login');
-        }
+        } 
     });
 });
 
@@ -157,7 +157,6 @@ app.get('/country', checkAuthenticated, (req, res) => {
             country: results,      
             user: req.session.user 
         });
-        
     });
 });
 
@@ -803,6 +802,8 @@ app.get('/search', (req, res) => {
     res.render('search', { results, user: req.session.user, searchTerm });
   });
 });
+
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
