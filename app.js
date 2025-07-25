@@ -546,6 +546,41 @@ app.post('/list/:id/destinations/addDestination', upload.single('image'), (req, 
   });
 });
 
+
+app.get('/list/:listId/destinations/:destinationId/edit', checkAuthenticated, (req, res) => {
+  const { listId, destinationId } = req.params;
+
+  const sql = 'SELECT * FROM destination WHERE destinationId = ? AND listId = ?';
+  connection.query(sql, [destinationId, listId], (err, results) => {
+    if (err) return res.status(500).send('DB error');
+    if (results.length === 0) return res.status(404).send('Destination not found');
+
+    res.render('editDestination', {
+      user: req.session.user,
+      destination: results[0]
+    });
+  });
+});
+
+app.post('/list/:listId/destinations/:destinationId/edit', upload.single('image'), (req, res) => {
+  const { listId, destinationId } = req.params;
+  const { destinationName, price, description } = req.body;
+
+  let image = req.body.currentImage; // default to current image
+  if (req.file) {
+    image = req.file.filename; // replace if a new one is uploaded
+  }
+
+  const sql = 'UPDATE destination SET image = ?, destinationName = ?, price = ?, description = ? WHERE destinationId = ? AND listId = ?';
+  connection.query(sql, [image, destinationName, price, description, destinationId, listId], (err, results) => {
+    if (err) {
+      console.error(err);
+      return res.send("Database error.");
+    }
+    res.redirect(`/list/${listId}/destinations`);
+  });
+});
+
 // app.get('/updateDestination/:id',checkAuthenticated, checkAdmin, (req,res) => {
 //     const destinationId = req.params.id;
 //     const sql = 'SELECT * FROM destination WHERE destinationId = ?';
