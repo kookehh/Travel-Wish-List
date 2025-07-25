@@ -332,7 +332,7 @@ app.get('/list/:id/destinations', checkAuthenticated, (req, res) => {
   connection.query(sql, [listId], (error, results) => {
     if (error) throw error;
 
-    res.render('destination_user', {
+    res.render('destination', {
       destinations: results,
       user: req.session.user,
       list: { listId: req.params.id },  
