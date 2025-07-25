@@ -713,7 +713,6 @@ app.post('/list/delete/:id', checkAuthenticated, (req, res) => {
 
 app.get('/search', (req, res) => {
   const searchTerm = req.query.q;
-  const countryId = req.query.countryId;
   const sql = "SELECT * FROM country WHERE countryName LIKE ?";
   connection.query(sql, [`%${searchTerm}%`], (err, results) => {
     if (err) throw err;
