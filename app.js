@@ -195,7 +195,7 @@ app.get('/country/:id/list', checkAuthenticated, (req, res) => {
         connection.query(listQuery, [countryId], (err, listResults) => {
             if (err) throw err;
 
-            res.render('list_user', {
+            res.render('list', {
                 user: req.session.user,
                 country: countryResults[0],
                 list: listResults            
