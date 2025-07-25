@@ -35,25 +35,27 @@
   <div class="container mt-4">
     <h2 class="text-center mb-4">Update Country</h2>
     <form action="/updateCountry/<%= country.countryId %>" method="POST" enctype="multipart/form-data" class="mx-auto" style="max-width: 500px;">
+      
+      <input type="hidden" name="currentImage" value="<%= country.image %>">
 
+      <!-- Display current image -->
       <div class="mb-3">
-          <img src="/images/<%= country.image %>" class="img-thumbnail mt-2" style="width: 150px;">
+        <img src="/images/<%= country.image %>" class="img-thumbnail mt-2" style="width: 150px;">
       </div>
-        
+
       <div class="mb-4">
         <label for="image" class="form-label">Country Image</label>
-        <input class="form-control" type="file" id="image" name="image" value="<%= country.image %> accept="image/*" required>
+        <input class="form-control" type="file" id="image" name="image" accept="image/*">
       </div>
 
       <div class="mb-3">
-        <label for="name" class="form-label">Country Name</label>
-        <input type="text" class="form-control" id="name" name="name" value="<%= country.countryName %>" required>
+        <label for="countryName" class="form-label">Country Name</label>
+        <input type="text" class="form-control" id="countryName" name="countryName" value="<%= country.countryName %>" required>
       </div>
 
       <div class="d-grid">
         <button type="submit" class="btn btn-primary">Update Country</button>
       </div>
-
     </form>
   </div>
 </body>
