@@ -1,29 +1,50 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Countries</title>
+  <meta charset="UTF-8" />
+  <title>Search Results – Travel Wishlist</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-
-<style>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
     body {
       font-family: 'Poppins', sans-serif;
-      background: linear-gradient(to bottom right, #caf0f8, #fde2e4);
+      background: linear-gradient(to bottom right, #caf0f8, #90e0ef);
       min-height: 100vh;
       padding-top: 80px;
+    }
+
+    .navbar-dark-blue {
+      background-color: #001f3f !important;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .navbar-brand, .nav-link {
+      color: #ffffff !important;
+      font-weight: 600;
+    }
+
+    .nav-link:hover {
+      text-decoration: underline;
+    }
+
+    h2 {
+      font-weight: 700;
+      color: #1d3557;
+      margin-bottom: 2rem;
     }
 
     .card {
       border: none;
       border-radius: 1rem;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.07);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
       transition: transform 0.2s ease, box-shadow 0.2s ease;
+      background: #ffffff;
     }
 
     .card:hover {
       transform: translateY(-5px);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
     }
 
     .card-img-top {
@@ -35,23 +56,38 @@
 
     .card-title {
       font-weight: 600;
-      color: #333;
+      color: #0077b6;
     }
 
-    .btn {
-      background-color: #0077b6;
-      border: none;
+    .btn-travel {
+      background: linear-gradient(135deg, #48cae4, #00b4d8);
       color: white;
+      border-radius: 10px;
+      padding: 0.5rem 1rem;
+      border: none;
+      transition: background 0.3s ease;
+    }
+
+    .btn-travel:hover {
+      background: #0077b6;
+    }
+
+    .btn-back {
+      background-color: #023e8a;
+      color: #fff;
+      margin-top: 1rem;
+      border-radius: 8px;
+      padding: 0.5rem 1rem;
     }
 
     .btn-back:hover {
-      background-color: #023e8a;
-      color: white;
+      background-color: #001f3f;
     }
+  </style>
+</head>
+<body>
 
-</style>
-
-<nav class="navbar navbar-expand-sm navbar-dark bg-dark fixed-top">
+  <nav class="navbar navbar-expand-sm navbar-dark navbar-dark-blue fixed-top">
     <div class="container-fluid">
       <a class="navbar-brand" href="/country">Travel Wishlist</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#collapsibleNavbar">
@@ -77,25 +113,30 @@
     </div>
   </nav>
 
-  <div class="container mt-4">
-    <h2>Search Results</h2>
+  <div class="container mt-5">
+    <h2 class="text-center">Search Results</h2>
     <% if (results.length > 0) { %>
       <div class="row">
         <% results.forEach(result => { %>
-          <div class="col-md-4">
-            <div class="card mb-3">
+          <div class="col-md-4 mb-4">
+            <div class="card h-100">
               <img src="/images/<%= result.image %>" class="card-img-top" alt="<%= result.countryName %>">
-              <div class="card-body">
+              <div class="card-body d-flex flex-column">
                 <h5 class="card-title"><%= result.countryName %></h5>
-                <a href="/country/<%= result.countryId %>/list" class="btn btn-primary">View Lists</a>
+                <a href="/country/<%= result.countryId %>/list" class="btn btn-travel mt-auto">View Lists</a>
               </div>
             </div>
           </div>
         <% }) %>
       </div>
     <% } else { %>
-      <p>No results found for "<%= searchTerm %>".</p>
+      <div class="alert alert-warning text-center">No results found for "<strong><%= searchTerm %></strong>".</div>
     <% } %>
-    <a href="/country" class="btn btn-back">Back to Countries</a>
+    <div class="text-center">
+      <a href="/country" class="btn btn-back">Back to Countries</a>
+    </div>
   </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
 </html>
