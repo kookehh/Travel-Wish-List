@@ -467,21 +467,21 @@ app.get('/updateList/:id',checkAuthenticated, checkAdmin, (req,res) => {
 
 app.post('/updateList/:id', upload.single('image'), (req, res) => {
     const listId = req.params.id;
-    const { name, countryId } = req.body;
+    const { name, countryId} = req.body;
     let image  = req.body.currentImage;
 
     if (req.file) {
         image = req.file.filename;
     }
 
-    const sql = 'UPDATE list SET image = ?, listName = ?, countryId = ? WHERE listId = ?';
+    const sql = 'UPDATE list SET image = ?, listName = ? WHERE listId = ?';
 
-    connection.query(sql, [image, name, countryId, listId], (error, results) => {
+    connection.query(sql, [image, name, listId, countryId], (error, results) => {
         if (error) {
             console.error("Error updating List:", error);
             return res.status(500).send('Error updating List');
         }
-        res.redirect(`/country/${countryId}/list`);
+        res.redirect(`/country`);
     });
 });
 
