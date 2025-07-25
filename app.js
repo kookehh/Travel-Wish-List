@@ -378,7 +378,7 @@ app.post('/addCountry', upload.single('image'), (req, res) => {
         res.redirect('/country');  
     });
 });
-
+/////////////////////////////////////////
 app.get('/updateCountry/:id',checkAuthenticated, checkAdmin, (req,res) => {
     const countryId = req.params.id;
     const sql = 'SELECT * FROM country WHERE countryId = ?';
@@ -397,21 +397,23 @@ app.get('/updateCountry/:id',checkAuthenticated, checkAdmin, (req,res) => {
 app.post('/updateCountry/:id', upload.single('image'), (req, res) => {
     const countryId = req.params.id;
     const { countryName } = req.body;
-    let image  = req.body.currentImage;
-    if (req.file) {
-        image = req.file.filename; 
-    } 
+    let image = req.body.currentImage;
 
-    const sql = 'UPDATE country SET countryName = ? , image = ? WHERE countryId = ?';
-    connection.query(sql, [countryName, countryId], (error, results) => {
+    if (req.file) {
+        image = req.file.filename;
+    }
+
+    const sql = 'UPDATE country SET countryName = ?, image = ? WHERE countryId = ?';
+    connection.query(sql, [countryName, image, countryId], (error, results) => {
         if (error) {
             console.error("Error updating country:", error);
             res.status(500).send('Error updating country');
         } else {
-            res.redirect('/country');
+            res.redirect('/country'); // or /country if that's your country listing page
         }
     });
 });
+
 
 app.get('/country/:id/addList', checkAuthenticated, (req, res) => {
     const countryId = req.params.id;
@@ -484,30 +486,6 @@ app.post('/updateList/:id', upload.single('image'), (req, res) => {
     });
 });
 
-
-// app.get('/addDestination', checkAuthenticated,  (req, res) => {
-//     res.render('addDestination', {user: req.session.user } ); 
-// });
-
-// app.post('/addDestination', upload.single('image'), (req, res) => {
-//     const { name } = req.body;  
-//     let image;
-//     if (req.file) {
-//         image = req.file.filename;
-//     } else {
-//         image = null;
-//     }
-
-//     const sql = 'INSERT INTO destination (image, DestinationName, price, description) VALUES (?, ?, ?, ?)';
-//     connection.query(sql, [image, name, price, description], (err, results) => {
-//         if (err) {
-//             console.error("Error adding list:", err);
-//             return res.status(500).send('Error adding list');
-//         }
-//         res.redirect('/addDestination');  
-//     });
-// });
-
 app.get('/list/:id/addDestination', checkAuthenticated, (req, res) => {
     const listId = req.params.id;
     const sql = 'SELECT * FROM list WHERE listId = ?';
@@ -579,48 +557,6 @@ app.post('/list/:listId/destinations/:destinationId/edit', upload.single('image'
     res.redirect(`/list/${listId}/destinations`);
   });
 });
-
-// app.get('/updateDestination/:id',checkAuthenticated, checkAdmin, (req,res) => {
-//     const destinationId = req.params.id;
-//     const sql = 'SELECT * FROM destination WHERE destinationId = ?';
-
-//     // Fetch data from MySQL based on the destination ID
-//     connection.query(sql , [destinationId], (error, results) => {
-//         if (error) throw error;
-
-//         // Check if any destination with the given ID was found
-//         if (results.length > 0) {
-//             // Render HTML page with the destination data
-//             res.render('updateDestination', { destination: results[0] });
-//         } else {
-//             // If no destination with the given ID was found, render a 404 page or handle it accordingly
-//             res.status(404).send('Destination not found');
-//         }
-//     });
-// });
-
-// app.post('/updateDestination/:id', upload.single('image'), (req, res) => {
-//     const destinationId = req.params.id;
-//     // Extract destination data from the request body
-//     const { name, quantity, price } = req.body;
-//     let image  = req.body.currentImage; //retrieve current image filename
-//     if (req.file) { //if new image is uploaded
-//         image = req.file.filename; // set image to be new image filename
-//     } 
-
-//     const sql = 'UPDATE destination SET destinationName = ? , quantity = ?, price = ?, image =? WHERE destinationId = ?';
-//     // Insert the new destination into the database
-//     connection.query(sql, [name, quantity, price, image, destinationId], (error, results) => {
-//         if (error) {
-//             // Handle any error that occurs during the database operation
-//             console.error("Error updating destination:", error);
-//             res.status(500).send('Error updating destination');
-//         } else {
-//             // Send a success response
-//             res.redirect('/inventory');
-//         }
-//     });
-// });
 
 app.get('/deleteWishlist/:id', (req, res) => {
     const wishlistId = req.params.id;

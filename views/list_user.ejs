@@ -41,10 +41,11 @@
             <a href="/list/<%= list.listId %>/destinations" class="btn btn-primary">View Destinations</a>
             <% if (user && user.accounttype === 'admin') { %>
               <a href="/updateList/<%= list.listId %>" class="btn btn-warning mt-2">Edit</a>
-              <form action="/list/delete/<%= list.listId %>" method="POST">
-                <input type="hidden" name="countryId" value="<%= country.countryId %>">
-                <button type="submit" class="btn btn-danger">Delete</button>
-              </form>
+              <a href="/country/<%= list.countryId %>/list/<%= list.listId %>/delete"
+                onclick="return confirm('Are you sure you want to delete this list? This cannot be undone.');"
+                class="btn btn-danger">
+                Delete
+              </a>
               <% } %>
           </div>
         </div>
