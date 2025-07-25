@@ -274,8 +274,6 @@ app.post('/wishlist/:id', checkAuthenticated, (req, res) => {
     });
 });
 
-
-
 app.get('/wishlist', checkAuthenticated, (req, res) => {
     const userId = req.session.user.id;
 
@@ -298,7 +296,6 @@ app.get('/wishlist', checkAuthenticated, (req, res) => {
         });
     });
 });
-
 
 app.get('/logout', (req, res) => {
     req.session.destroy();
