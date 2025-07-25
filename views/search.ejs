@@ -5,29 +5,76 @@
   <title>Countries</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
-  <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
-      <div class="container-fluid">
-        <a class="navbar-brand" href="/">Travel Wishlist</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#collapsibleNavbar">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="collapsibleNavbar">
-          <ul class="navbar-nav">
+
+<style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(to bottom right, #caf0f8, #fde2e4);
+      min-height: 100vh;
+      padding-top: 80px;
+    }
+
+    .card {
+      border: none;
+      border-radius: 1rem;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.07);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-img-top {
+      height: 200px;
+      object-fit: cover;
+      border-top-left-radius: 1rem;
+      border-top-right-radius: 1rem;
+    }
+
+    .card-title {
+      font-weight: 600;
+      color: #333;
+    }
+
+    .btn {
+      background-color: #0077b6;
+      border: none;
+      color: white;
+    }
+
+    .btn-back:hover {
+      background-color: #023e8a;
+      color: white;
+    }
+
+</style>
+
+<nav class="navbar navbar-expand-sm navbar-dark bg-dark fixed-top">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/country">Travel Wishlist</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#collapsibleNavbar">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="collapsibleNavbar">
+        <ul class="navbar-nav ms-auto">
+          <% if (user && user.accounttype === 'user') { %>
             <li class="nav-item">
               <a class="nav-link" href="/wishlist">Wishlist</a>
-            </li>  
-            <li class="nav-item">
-              <a class="nav-link" href="/logout">Logout</a>
             </li>
-            <% if (user && user.accounttype === 'admin') { %>
-              <li class="nav-item">
-                <a class="nav-link" href="/addCountry">Add Country</a>
-              </li>
-            <% } %>
-          </ul>
-        </div>
+          <% } %>
+          <li class="nav-item">
+            <a class="nav-link" href="/logout">Logout</a>
+          </li>
+          <% if (user && user.accounttype === 'admin') { %>
+            <li class="nav-item">
+              <a class="nav-link" href="/addCountry">Add Country</a>
+            </li>
+          <% } %>
+        </ul>
       </div>
+    </div>
   </nav>
 
   <div class="container mt-4">
@@ -49,5 +96,6 @@
     <% } else { %>
       <p>No results found for "<%= searchTerm %>".</p>
     <% } %>
+    <a href="/country" class="btn btn-back">Back to Countries</a>
   </div>
-
+</html>
