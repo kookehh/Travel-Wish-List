@@ -238,46 +238,137 @@ app.post('/add-to-wishlist/:id', checkAuthenticated, (req, res) => {
     });
 });
 
+// app.get('/wishlist/editProfile/:id', (req, res) => {
+//     const userId = req.session.user.id;
+//     const sql = 'SELECT * FROM profile WHERE userId = ?';
+//     connection.query(sql, [userId], (err, results) => {
+//         if (err) {
+//             console.error("Database error when fetching wishlist:", err);
+//             return res.status(500).send("Error loading wishlist");
+//         }
+
+//         // just take the first profile record (if exists)
+//         const profile = results.length > 0 ? results[0] : {};
+
+//         res.render('wishlist', {
+//             wishlist: results,
+//             user: req.session.user,
+//             bio: profile.bio || '',
+//             userId: req.session.user.id
+//         });
+//     });
+// });
+
 app.get('/wishlist/editProfile/:id', (req, res) => {
     const userId = req.session.user.id;
     const sql = 'SELECT * FROM profile WHERE userId = ?';
     connection.query(sql, [userId], (err, results) => {
-        if (err) {
-            console.error("Database error when fetching wishlist:", err);
-            return res.status(500).send("Error loading wishlist");
-        }
+        if (err) return res.status(500).send("Error loading profile");
 
-        // just take the first profile record (if exists)
         const profile = results.length > 0 ? results[0] : {};
-
-        res.render('wishlist', {
-            wishlist: results,
-            user: req.session.user,
-            bio: profile.bio || '',
-            userId: req.session.user.id
+        res.render('editProfile', {
+            profile: profile,
+            users: req.session.user
         });
     });
 });
 
-app.post('/wishlist/:id', checkAuthenticated, (req, res) => {
-    const destinationId = req.params.id;
-    const id = req.session.user.id;
+app.post('/wishlist/editProfile/:id', upload.single('image'), (req, res) => {
+    const userId = req.session.user.id;
+    const { username, bio } = req.body;
+    let image = req.file ? req.file.filename : null;
 
-    const insertSql = `
-        INSERT INTO wishlist (id, destinationId)
-        VALUES (?, ?)
-    `;
+    const checkSql = 'SELECT * FROM profile WHERE userId = ?';
+    connection.query(checkSql, [userId], (err, results) => {
+        if (err) return res.status(500).send('Error checking profile');
 
-    connection.query(insertSql, [id, destinationId, req.body.quantity || 1], (err, result) => {
-        if (err) {
-            console.error(err);
-            req.flash('error', 'Failed to add to wishlist.');
-            return res.redirect('/wishlist');
-        }
-        req.flash('success', 'Destination added to wishlist!');
-        res.redirect('/wishlist');
+        const updateUserSql = 'UPDATE users SET username = ? WHERE id = ?';
+        connection.query(updateUserSql, [username, userId], (err) => {
+            if (err) return res.status(500).send('Error updating username');
+
+            // ✅ Update the session to reflect the new username
+            req.session.user.username = username;
+
+            if (results.length > 0) {
+                // Profile exists — update
+                const updateProfileSql = image
+                    ? 'UPDATE profile SET bio = ?, image = ? WHERE userId = ?'
+                    : 'UPDATE profile SET bio = ? WHERE userId = ?';
+
+                const params = image ? [bio, image, userId] : [bio, userId];
+                connection.query(updateProfileSql, params, (err) => {
+                    if (err) return res.status(500).send('Error updating profile');
+                    res.redirect('/wishlist');
+                });
+            } else {
+                // No profile — insert new
+                const insertProfileSql = 'INSERT INTO profile (userId, bio, image) VALUES (?, ?, ?)';
+                connection.query(insertProfileSql, [userId, bio, image], (err) => {
+                    if (err) return res.status(500).send('Error creating profile');
+                    res.redirect('/wishlist');
+                });
+            }
+        });
     });
 });
+
+
+// app.post('/wishlist/editProfile/:id', upload.single('image'), (req, res) => {
+//     const userId = req.session.user.id;
+//     const { username, bio } = req.body;
+//     let image = req.file ? req.file.filename : null;
+
+//     const checkSql = 'SELECT * FROM profile WHERE userId = ?';
+//     connection.query(checkSql, [userId], (err, results) => {
+//         if (err) return res.status(500).send('Error checking profile');
+
+//         const updateUserSql = 'UPDATE users SET username = ? WHERE id = ?';
+//         connection.query(updateUserSql, [username, userId], (err) => {
+//             if (err) return res.status(500).send('Error updating username');
+
+//             if (results.length > 0) {
+//                 // Profile exists — update
+//                 const updateProfileSql = image
+//                     ? 'UPDATE profile SET bio = ?, image = ? WHERE userId = ?'
+//                     : 'UPDATE profile SET bio = ? WHERE userId = ?';
+
+//                 const params = image ? [bio, image, userId] : [bio, userId];
+//                 connection.query(updateProfileSql, params, (err) => {
+//                     if (err) return res.status(500).send('Error updating profile');
+//                     res.redirect('/wishlist');
+//                 });
+//             } else {
+//                 // No profile — insert new
+//                 const insertProfileSql = 'INSERT INTO profile (userId, bio, image) VALUES (?, ?, ?)';
+//                 connection.query(insertProfileSql, [userId, bio, image], (err) => {
+//                     if (err) return res.status(500).send('Error creating profile');
+//                     res.redirect('/wishlist');
+//                 });
+//             }
+//         });
+//     });
+// });
+
+
+// app.post('/wishlist/:id', checkAuthenticated, (req, res) => {
+//     const destinationId = req.params.id;
+//     const id = req.session.user.id;
+
+//     const insertSql = `
+//         INSERT INTO wishlist (id, destinationId)
+//         VALUES (?, ?)
+//     `;
+
+//     connection.query(insertSql, [id, destinationId, req.body.quantity || 1], (err, result) => {
+//         if (err) {
+//             console.error(err);
+//             req.flash('error', 'Failed to add to wishlist.');
+//             return res.redirect('/wishlist');
+//         }
+//         req.flash('success', 'Destination added to wishlist!');
+//         res.redirect('/wishlist');
+//     });
+// });
 
 app.get('/wishlist', checkAuthenticated, (req, res) => {
     const userId = req.session.user.id;
