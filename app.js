@@ -739,7 +739,6 @@ app.post('/list/delete/:id', checkAuthenticated, (req, res) => {
     });
 });
 
-
 app.get('/search', (req, res) => {
   const searchTerm = req.query.q;
   const sql = "SELECT * FROM country WHERE countryName LIKE ?";
