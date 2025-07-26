@@ -135,6 +135,9 @@
               <% if (user && user.accounttype === 'admin') { %>
                 <a href="/updateList/<%= list.listId %>" class="btn btn-travel-secondary mt-2">Edit</a>
                 <a href="/deleteList/<%= list.listId %>" class="btn btn-travel-danger mt-2">Delete</a>
+                <form action="/country/deleteList/<%= list.listId %>" method="POST" onsubmit="return confirm('Are you sure you want to delete this country and all its related data?');">
+                  <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
               <% } %>
             </div>
           </div>
