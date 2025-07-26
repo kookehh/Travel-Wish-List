@@ -686,31 +686,49 @@ app.get('/country/:countryId/list/:listId/delete', (req, res) => {
   });
 });
 
+// app.post('/list/delete/:id', checkAuthenticated, (req, res) => {
+//     const listId = req.params.id;
+
+//     // First, delete all destinations in that list
+//     const deleteDestinationsSql = 'DELETE FROM destination WHERE listId = ?';
+//     connection.query(deleteDestinationsSql, [listId], (err, results) => {
+//         if (err) {
+//             console.error("Error deleting destinations:", err);
+//             return res.status(500).send('Error deleting destinations');
+//         }
+
+//         // Now delete the list itself
+//         const deleteListSql = 'DELETE FROM list WHERE listId = ?';
+//         connection.query(deleteListSql, [listId], (err, results) => {
+//             if (err) {
+//                 console.error("Error deleting list:", err);
+//                 return res.status(500).send('Error deleting list');
+//             }
+
+//             // If you pass the countryId from the form, use it to redirect
+//             const countryId = req.body.countryId || ''; // Add a hidden field in your form
+//             res.redirect(`/country/${countryId}/list`);
+//         });
+//     });
+// });
+
 app.post('/list/delete/:id', checkAuthenticated, (req, res) => {
     const listId = req.params.id;
 
-    // First, delete all destinations in that list
     const deleteDestinationsSql = 'DELETE FROM destination WHERE listId = ?';
-    connection.query(deleteDestinationsSql, [listId], (err, results) => {
-        if (err) {
-            console.error("Error deleting destinations:", err);
-            return res.status(500).send('Error deleting destinations');
-        }
+    connection.query(deleteDestinationsSql, [listId], (err) => {
+        if (err) return res.status(500).send('Error deleting destinations');
 
-        // Now delete the list itself
         const deleteListSql = 'DELETE FROM list WHERE listId = ?';
-        connection.query(deleteListSql, [listId], (err, results) => {
-            if (err) {
-                console.error("Error deleting list:", err);
-                return res.status(500).send('Error deleting list');
-            }
+        connection.query(deleteListSql, [listId], (err) => {
+            if (err) return res.status(500).send('Error deleting list');
 
-            // If you pass the countryId from the form, use it to redirect
-            const countryId = req.body.countryId || ''; // Add a hidden field in your form
+            const countryId = req.body.countryId || '';
             res.redirect(`/country/${countryId}/list`);
         });
     });
 });
+
 
 app.get('/search', (req, res) => {
   const searchTerm = req.query.q;
