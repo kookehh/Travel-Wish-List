@@ -238,18 +238,18 @@ app.post('/add-to-wishlist/:id', checkAuthenticated, (req, res) => {
     });
 });
 
-app.get('/editWishlist/:id', (req, res) => {
-    const productId = req.params.id;    
-    const sql = 'SELECT * FROM destination WHERE destinationId = ?';
-    connection.query( sql, [destinationId], (error, results) => {
+app.get('/wishlist/editProfile', (req, res) => {
+    const wishlistId = req.params.id;    
+    const sql = 'SELECT * FROM wishlist WHERE wishlistId = ?';
+    connection.query( sql, [wishlistId], (error, results) => {
         if (error) {
             console.error('Database query error: ', error.message);
-            res.status(500).send('Error retrieving product by ID');
+            res.status(500).send('Error retrieving wishlist by ID');
         }
         if (results.length > 0) {
-            res.render('editDestination', { product: results[0] });
+            res.render('editProfile', { product: results[0] });
         } else {
-            res.status(404).send('Destination not found');
+            res.status(404).send('Profile not found');
         }
     });
 });
@@ -523,7 +523,6 @@ app.post('/list/:id/destinations/addDestination', upload.single('image'), (req, 
     res.redirect(`/list/${listId}/destinations`);
   });
 });
-
 
 app.get('/list/:listId/destinations/:destinationId/edit', checkAuthenticated, (req, res) => {
   const { listId, destinationId } = req.params;
