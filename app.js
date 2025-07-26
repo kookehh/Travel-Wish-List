@@ -278,9 +278,11 @@ app.get('/wishlist', checkAuthenticated, (req, res) => {
     const userId = req.session.user.id;
 
     const sql = `
-        SELECT wishlist.*, destination.destinationName, destination.price, destination.image
+        SELECT wishlist.*, destination.destinationName, destination.price, destination.image,
+        profile.image AS profileImage, profile.bio
         FROM wishlist 
         JOIN destination ON wishlist.destinationId = destination.destinationId
+        JOIN profile ON wishlist.Id = profile.userId
         WHERE wishlist.id = ?
     `;
 
@@ -292,7 +294,9 @@ app.get('/wishlist', checkAuthenticated, (req, res) => {
 
         res.render('wishlist', {
             wishlist: results,
-            user: req.session.user
+            user: req.session.user,
+            profileImage: results.length > 0 ? results[0].profileImage : null,
+            bio: results.length > 0 ? results[0].bio : null
         });
     });
 });
