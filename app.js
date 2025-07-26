@@ -238,19 +238,24 @@ app.post('/add-to-wishlist/:id', checkAuthenticated, (req, res) => {
     });
 });
 
-app.get('/wishlist/editProfile', (req, res) => {
-    const wishlistId = req.params.id;    
-    const sql = 'SELECT * FROM wishlist WHERE wishlistId = ?';
-    connection.query( sql, [wishlistId], (error, results) => {
-        if (error) {
-            console.error('Database query error: ', error.message);
-            res.status(500).send('Error retrieving wishlist by ID');
+app.get('/wishlist/editProfile/:id', (req, res) => {
+    const userId = req.session.user.id;
+    const sql = 'SELECT * FROM profile WHERE userId = ?';
+    connection.query(sql, [userId], (err, results) => {
+        if (err) {
+            console.error("Database error when fetching wishlist:", err);
+            return res.status(500).send("Error loading wishlist");
         }
-        if (results.length > 0) {
-            res.render('editProfile', { product: results[0] });
-        } else {
-            res.status(404).send('Profile not found');
-        }
+
+        // just take the first profile record (if exists)
+        const profile = results.length > 0 ? results[0] : {};
+
+        res.render('wishlist', {
+            wishlist: results,
+            user: req.session.user,
+            bio: profile.bio || '',
+            userId: req.session.user.id
+        });
     });
 });
 
@@ -285,7 +290,7 @@ app.get('/wishlist', checkAuthenticated, (req, res) => {
         JOIN profile ON wishlist.Id = profile.userId
         WHERE wishlist.id = ?
     `;
-
+    
     connection.query(sql, [userId], (err, results) => {
         if (err) {
             console.error("Database error when fetching wishlist:", err);

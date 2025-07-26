@@ -28,13 +28,7 @@
   <div class="container mt-4">
     <h2 class="text-center mb-4">Edit Profile</h2>
 
-    <form action="/list/<%= destination.listId %>/destinations/<%= destination.destinationId %>/edit" method="POST" enctype="multipart/form-data" class="mx-auto" style="max-width: 500px;">
-      
-      <input type="hidden" name="currentImage" value="<%= destination.image %>">
-
-      <div class="mb-3">
-        <img src="/images/<%= destination.image %>" class="img-thumbnail mt-2 w-100" style="max-height: 250px;" alt="Current Destination Image">
-      </div>
+    <form action="/wishlist/editProfile/<%= profile.userId %>" method="POST" enctype="multipart/form-data" class="mx-auto" style="max-width: 500px;">
 
       <div class="mb-4">
         <label for="image" class="form-label">Change Image</label>
@@ -42,18 +36,13 @@
       </div>
 
       <div class="mb-3">
-        <label for="destinationName" class="form-label">Destination Name</label>
-        <input type="text" class="form-control" id="destinationName" name="destinationName" value="<%= destination.destinationName %>" required>
+        <label for="username" class="form-label">Username:</label>
+        <input type="text" class="form-control" id="username" name="username" value="<%= users.username %>" required>
       </div>
 
       <div class="mb-3">
-        <label for="price" class="form-label">Price ($)</label>
-        <input type="number" class="form-control" id="price" name="price" value="<%= destination.price %>" step="0.01" required>
-      </div>
-
-      <div class="mb-3">
-        <label for="description" class="form-label">Description</label>
-        <textarea class="form-control" id="description" name="description" rows="3" required><%= destination.description %></textarea>
+        <label for="bio" class="form-label">Bio:</label>
+        <textarea class="form-control" id="bio" name="bio" rows="3" required><%= profile.bio %></textarea>
       </div>
 
 
