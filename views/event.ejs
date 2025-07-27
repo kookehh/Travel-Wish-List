@@ -15,13 +15,20 @@
     }
 
     .navbar-pastel-purple {
-      background-color: #b28dff !important; 
+      background-color: #a974bf !important; 
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
 
-    .navbar-brand, .nav-link {
+    .navbar-brand {
+      font-weight: 700;
+      font-size: 1.4rem;
       color: white !important;
-      font-weight: 600;
+    }
+
+    .nav-link {
+      color: white !important;
+      font-weight: 500;
+      font-size: 1rem;
     }
 
     .nav-link:hover {
@@ -46,15 +53,16 @@
   </style>
 </head>
 <body>
- 
-  <nav class="navbar navbar-expand-sm navbar-pastel-purple fixed-top">
+
+  <!-- ✅ Updated navbar with standard format -->
+  <nav class="navbar navbar-expand-sm navbar-dark navbar-pastel-purple fixed-top">
     <div class="container-fluid">
       <a class="navbar-brand" href="/country">Travel Wishlist</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
         <span class="navbar-toggler-icon"></span>
       </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ms-auto">
+      <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+        <ul class="navbar-nav">
           <% if (user && user.accounttype === 'user') { %>
             <li class="nav-item">
               <a class="nav-link" href="/wishlist">Profile</a>
@@ -67,7 +75,6 @@
       </div>
     </div>
   </nav>
-
 
   <div class="container mt-5">
     <h1><%= event.destinationName %></h1>
