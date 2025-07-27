@@ -3,19 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <title>Your Wishlist</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <style>
     body {
       font-family: 'Poppins', sans-serif;
-      background: linear-gradient(to bottom right, #f3e8ff, #e5d3f2);
+      margin: 0;
+      background: linear-gradient(to bottom right, #eaf8ff, #f9f1ff);
       min-height: 100vh;
       padding-top: 80px;
+      color: #2c3e50;
     }
 
     .navbar {
-      background-color: #6a4c93 !important;
+      background-color: #1f1f1f;
+      padding: 1rem 2rem;
     }
 
     .navbar-brand {
@@ -24,142 +27,196 @@
     }
 
     .nav-link {
-      color: #e2e2e2 !important;
+      color: #fff !important;
+      margin-left: 1rem;
+      font-weight: 500;
     }
 
-    .container {
-      background-color: #ffffffd8;
-      padding: 2rem;
-      border-radius: 1rem;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    .wrapper {
+      max-width: 1080px;
+      margin: auto;
+      padding: 3rem 1rem;
+    }
+
+    /* Profile Section */
+    .profile {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .profile img {
+      width: 120px;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 4px solid #e0d6c6;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    .profile h5 {
+      margin-top: 1rem;
+      font-weight: 600;
+    }
+
+    .profile p {
+      font-size: 0.95rem;
+      color: #777;
+      margin-bottom: 0.3rem;
+    }
+
+    .profile a {
+      font-size: 0.9rem;
+      color: #a56c3f;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .profile a:hover {
+      text-decoration: underline;
     }
 
     h2 {
-      color: #4b3869;
       font-weight: 600;
       text-align: center;
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .subheading {
+      text-align: center;
+      font-size: 1rem;
+      color: #666;
       margin-bottom: 2rem;
     }
 
-    .table {
-      border-radius: 0.5rem;
+    .wishlist-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem;
+    }
+
+    .card {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.05);
       overflow: hidden;
+      transition: transform 0.3s ease;
     }
 
-    th {
-      background-color: #d8b4fe;
-      color: #333;
+    .card:hover {
+      transform: translateY(-6px);
     }
 
-    .img-thumbnail {
-      border-radius: 8px;
+    .card img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
     }
 
-    .btn-danger {
-      background-color: #f08080;
+    .card-body {
+      padding: 1rem 1.25rem;
+    }
+
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .card-text {
+      font-size: 0.95rem;
+      margin-bottom: 1rem;
+      color: #666;
+    }
+
+    .btn-remove {
+      background-color: #ff6b6b;
       border: none;
+      padding: 8px 16px;
+      border-radius: 10px;
+      font-weight: 500;
+      font-size: 0.9rem;
+      color: white;
     }
 
-    .btn-danger:hover {
-      background-color: #dc6c6c;
+    .btn-remove:hover {
+      background-color: #e55050;
+    }
+
+    .empty-text {
+      text-align: center;
+      color: #888;
+      font-style: italic;
+      font-size: 1.1rem;
+      margin-top: 3rem;
     }
 
     .btn-back {
-      background-color: #c084fc;
-      color: #fff;
-      border: none;
+      margin-top: 3rem;
+      display: block;
+      width: max-content;
+      margin-left: auto;
+      margin-right: auto;
+      background-color: #2c3e50;
+      color: white;
+      padding: 10px 26px;
       border-radius: 50px;
-      padding: 0.5rem 1.2rem;
       font-weight: 500;
-      transition: background-color 0.3s ease;
+      text-decoration: none;
+      transition: 0.3s ease-in-out;
     }
 
     .btn-back:hover {
-      background-color: #a76de8;
+      background-color: #1a2a3a;
     }
-
-    .pfp {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 2rem;
-    text-align: center;
-}
-
   </style>
 </head>
-
 <body>
 
-  <nav class="navbar navbar-expand-sm navbar-dark fixed-top">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="/country">Travel Wishlist</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#collapsibleNavbar">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="collapsibleNavbar">
-        <ul class="navbar-nav ms-auto">
-          <li class="nav-item">
-            <a class="nav-link" href="/logout">Logout</a>
-          </li> 
-        </ul>
-      </div>
+  <nav class="navbar fixed-top navbar-expand-sm">
+    <a class="navbar-brand" href="/country">Travel Wishlist</a>
+    <div class="ms-auto d-flex">
+      <a class="nav-link" href="/wishlist/editProfile/<%= user.id %>">Profile</a>
+      <a class="nav-link" href="/logout">Logout</a>
     </div>
   </nav>
 
-  <div class="container mt-5">
-    <div class="pfp">
-      <img src="/images/<%= profileImage %>" class="rounded-circle" width="200" height="200">
-      <br>
-      <div>
-        <h5><b><%= user.username %></b></h5>
-        <p><%= bio %></p>
-        <a href="/wishlist/editProfile/<%= user.id %>">Edit</a>
-      </div>
+  <div class="wrapper">
+    <!-- ✅ Profile Section -->
+    <div class="profile">
+      <img src="/images/<%= profileImage %>" alt="Profile Picture">
+      <h5><%= user.username %></h5>
+      <p><%= bio %></p>
+      <a href="/wishlist/editProfile/<%= user.id %>">Edit Profile</a>
     </div>
-    <h2>Your Wishlist</h2>
+
+    <!-- ✅ Page Heading -->
+    <h2>Your Travel Wishlist</h2>
+    <p class="subheading">A collection of destinations you dream of visiting someday.</p>
+
+    <!-- ✅ Wishlist Cards -->
     <% if (wishlist.length === 0) { %>
-      <p class="text-muted text-center">Your wishlist is empty. Go explore!</p>
+      <p class="empty-text">You haven’t added any destinations yet.</p>
     <% } else { %>
-      <div class="table-responsive">
-        <table class="table table-bordered align-middle text-center">
-          <thead>
-            <tr>
-              <th>Destination Name</th>
-              <th>Image</th>
-              <th>Price</th>
-              <% if (user && user.accounttype === 'user') { %>
-                <th>Delete</th>
-              <% } %>
-            </tr>
-          </thead>
-          <tbody>
-            <% let total = 0; %>
-            <% for (let i = 0; i < wishlist.length; i++) { %>
-              <tr>
-                <td><%= wishlist[i].destinationName %></td>
-                <td><img src="/images/<%= wishlist[i].image %>" width="100" class="img-thumbnail"></td>
-                <td>$<%= wishlist[i].price.toFixed(2) %></td>
-                <% if (user && user.accounttype === 'user') { %>
-                  <td>
-                    <form action="/wishlist/delete/<%= wishlist[i].wishlistId %>" method="POST" onsubmit="return confirm('Are you sure you want to delete this destination from your wishlist?');">
-                      <button type="submit" class="btn btn-warning mt-2 d-block">Delete</button>
-                    </form>
-
-                  </td>
-                <% } %>
-              </tr>
-            <% }; %>
-          </tbody>
-        </table>
+      <div class="wishlist-grid">
+        <% for (let i = 0; i < wishlist.length; i++) { %>
+          <div class="card">
+            <img src="/images/<%= wishlist[i].image %>" alt="<%= wishlist[i].destinationName %>">
+            <div class="card-body">
+              <h5 class="card-title"><%= wishlist[i].destinationName %></h5>
+              <p class="card-text">Estimated cost: $<%= wishlist[i].price.toFixed(2) %></p>
+              <form action="/wishlist/delete/<%= wishlist[i].wishlistId %>" method="POST" onsubmit="return confirm('Remove this destination?');">
+                <button type="submit" class="btn btn-remove">Remove</button>
+              </form>
+            </div>
+          </div>
+        <% } %>
       </div>
 
-
-      <div class="text-center mt-4">
-        <a href="/country/<%= wishlist.countryid %>" class="btn btn-back">← Back to Shopping</a>
-      </div>
+      <a href="/country/<%= wishlist.countryid %>" class="btn-back">← Back to Explore</a>
     <% } %>
   </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
