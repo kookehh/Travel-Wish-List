@@ -5,114 +5,126 @@ const flash = require('connect-flash');
 const multer = require('multer');
 const app = express();
 
+// prevent script tag or malicious code 
+function containsScriptTag(input) {
+    const pattern = /<\s*script.*?>.*?<\s*\/\s*script\s*>/gi;
+    return pattern.test(input);
+}
+
+const disallowedChars = /[\"#$!*&%:]/;
+
 
 const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'public/images');
-    },
-    filename: (req, file, cb) => {
-        cb(null, file.originalname); 
-    }
+    destination: (req, file, cb) => cb(null, 'public/images'),
+    filename: (req, file, cb) => cb(null, file.originalname)
 });
-
 const upload = multer({ storage: storage });
 
 const connection = mysql.createConnection({
-    // host: 'localhost',
-    // user: 'root',
-    // password: 'Republic_C207',
-    // database: 'C328TravelWishList_jetbackbuy'
     host: 'zxw6ws.h.filess.io',
     port: 3307,
     user: 'C328TravelWishList_jetbackbuy',
     password: '427766ceea97ead6c7975d85ac90ea584f82a776',
     database: 'C328TravelWishList_jetbackbuy'
-  });
-
+});
 connection.connect((err) => {
-    if (err) {
-        console.error('Error connecting to MySQL:', err);
-        return;
-    }
+    if (err) return console.error('MySQL error:', err);
     console.log('Connected to MySQL database');
 });
 
-// Set up view engine
-app.set('view engine', 'ejs');
-//  enable static files
-app.use(express.static('public'));
-// enable form processing
-app.use(express.urlencoded({
-    extended: false
-}));
 
+app.set('view engine', 'ejs');
+app.use(express.static('public'));
+app.use(express.urlencoded({ extended: false }));
 app.use(session({
     secret: 'secret',
     resave: false,
     saveUninitialized: true,
-    cookie: { maxAge: 1000 * 60 * 60 * 24 * 7 } 
+    cookie: { maxAge: 1000 * 60 * 60 * 24 * 7 }
 }));
-
 app.use(flash());
 
+
 const checkAuthenticated = (req, res, next) => {
-    if (req.session.user) {
-        return next();
-    } else {
-        req.flash('error', 'Please log in to view this resource');
-        res.redirect('/login');
-    }
+    if (req.session.user) return next();
+    req.flash('error', 'Please log in to view this resource');
+    res.redirect('/login');
 };
 
 const checkAdmin = (req, res, next) => {
-    if (req.session.user.accounttype === 'admin') {
-        return next();
-    } else {
-        req.flash('error', 'Access denied');
-        res.redirect('/'); 
-    }
+    if (req.session.user.accounttype === 'admin') return next();
+    req.flash('error', 'Access denied');
+    res.redirect('/');
 };
 
-const validateRegistration = (req, res, next) => {
-    const { username, email, password, contact, accounttype } = req.body;
 
-    if (!username || !email || !password  || !contact || !accounttype) {
-        return res.status(400).send('All fields are required.');
-    }
-    
-    if (password.length < 6) {
-        req.flash('error', 'Password should be at least 6 or more characters long');
+const validateRegistration = (req, res, next) => {
+    let { username, email, password, contact, accounttype } = req.body;
+
+    username = username.trim();
+    email = email.trim();
+    contact = contact.trim();
+    accounttype = accounttype.trim();
+
+
+    if (!username || !email || !password || !contact || !accounttype) {
+        req.flash('error', 'All fields are required.');
         req.flash('formData', req.body);
         return res.redirect('/register');
     }
+
+    // Check for script injection
+    const inputs = [username, email, password, contact, accounttype];
+    if (inputs.some(containsScriptTag)) {
+        req.flash('error', 'Invalid input: script tags not allowed.');
+        req.flash('formData', req.body);
+        return res.redirect('/register');
+    }
+
+    const filteredFields = [username, email, contact, accounttype];
+    if (filteredFields.some(field => disallowedChars.test(field))) {
+        req.flash('error', 'Special characters like " # $ ! * & % : are not allowed.');
+        req.flash('formData', req.body);
+        return res.redirect('/register');
+    }
+
+
+    if (password.length < 6) {
+        req.flash('error', 'Password must be at least 6 characters long.');
+        req.flash('formData', req.body);
+        return res.redirect('/register');
+    }
+
     next();
 };
 
-app.get('/',  (req, res) => {
-    res.render('index', {user: req.session.user} );
+
+app.get('/', (req, res) => {
+    res.render('index', { user: req.session.user });
 });
 
 app.get('/register', (req, res) => {
-    res.render('register', { messages: req.flash('error'), formData: req.flash('formData')[0] });
+    res.render('register', {
+        messages: req.flash('error'),
+        formData: req.flash('formData')[0]
+    });
 });
 
 app.post('/register', validateRegistration, (req, res) => {
-
     const { username, email, password, contact, accounttype } = req.body;
-
     const sql = 'INSERT INTO users (username, email, password, contact, accounttype) VALUES (?, ?, SHA1(?), ?, ?)';
-    connection.query(sql, [username, email, password,  contact, accounttype], (err, result) => {
-        if (err) {
-            throw err;
-        }
-        console.log(result);
-        req.flash('success', 'Registration successful! Please log in.');
+    connection.query(sql, [username, email, password, contact, accounttype], (err) => {
+        if (err) throw err;
+        req.flash('success', 'Registration successful. Please login.');
         res.redirect('/login');
     });
 });
 
 app.get('/login', (req, res) => {
-    res.render('login', { messages: req.flash('success'), errors: req.flash('error') });
+    res.render('login', {
+        messages: req.flash('success'),
+        errors: req.flash('error')
+    });
 });
 
 app.post('/login', (req, res) => {
@@ -123,30 +135,28 @@ app.post('/login', (req, res) => {
         return res.redirect('/login');
     }
 
+    if (containsScriptTag(email) || containsScriptTag(password)) {
+        req.flash('error', 'Invalid input detected.');
+        return res.redirect('/login');
+    }
+
     const sql = 'SELECT * FROM users WHERE email = ? AND password = SHA1(?)';
     connection.query(sql, [email, password], (err, results) => {
         if (err) {
-            console.error('Login query error:', err);
-            req.flash('error', 'Something went wrong. Please try again.');
+            console.error('Login error:', err);
+            req.flash('error', 'Something went wrong.');
             return res.redirect('/login');
         }
 
         if (results.length > 0) {
             req.session.user = results[0];
-            req.flash('success', 'Login successful!');
-
-            if (req.session.user.accounttype === 'admin') {
-                return res.redirect('/country');
-            } else {
-                return res.redirect('/country');
-            }
+            return res.redirect('/country');
         } else {
             req.flash('error', 'Invalid email or password.');
             return res.redirect('/login');
-        } 
+        }
     });
 });
-
 app.get('/country', checkAuthenticated, (req, res) => {
     connection.query('SELECT * FROM country', (error, results) => {
         if (error) throw error;
@@ -264,12 +274,9 @@ app.post('/wishlist/editProfile/:id', upload.single('image'), (req, res) => {
         const updateUserSql = 'UPDATE users SET username = ? WHERE id = ?';
         connection.query(updateUserSql, [username, userId], (err) => {
             if (err) return res.status(500).send('Error updating username');
-
-            // ✅ Update the session to reflect the new username
             req.session.user.username = username;
 
             if (results.length > 0) {
-                // Profile exists — update
                 const updateProfileSql = image
                     ? 'UPDATE profile SET bio = ?, image = ? WHERE userId = ?'
                     : 'UPDATE profile SET bio = ? WHERE userId = ?';
@@ -280,7 +287,6 @@ app.post('/wishlist/editProfile/:id', upload.single('image'), (req, res) => {
                     res.redirect('/wishlist');
                 });
             } else {
-                // No profile — insert new
                 const insertProfileSql = 'INSERT INTO profile (userId, bio, image) VALUES (?, ?, ?)';
                 connection.query(insertProfileSql, [userId, bio, image], (err) => {
                     if (err) return res.status(500).send('Error creating profile');
@@ -416,7 +422,7 @@ app.post('/addCountry', upload.single('image'), (req, res) => {
         res.redirect('/country');  
     });
 });
-/////////////////////////////////////////
+
 app.get('/updateCountry/:id',checkAuthenticated, checkAdmin, (req,res) => {
     const countryId = req.params.id;
     const sql = 'SELECT * FROM country WHERE countryId = ?';
@@ -447,7 +453,7 @@ app.post('/updateCountry/:id', upload.single('image'), (req, res) => {
             console.error("Error updating country:", error);
             res.status(500).send('Error updating country');
         } else {
-            res.redirect('/country'); // or /country if that's your country listing page
+            res.redirect('/country'); 
         }
     });
 });
@@ -600,7 +606,6 @@ app.get('/deleteWishlist/:id', (req, res) => {
     const sql = 'DELETE FROM wishlist WHERE wishlistId = ?';
     connection.query(sql, [wishlistId], (error, results) => {
         if (error) {
-            // Handle any error that occurs during the database operation
             console.error("Error deleting wishlist:", error);
             res.status(500).send('Error deleting wishlist');
         } else {
@@ -628,11 +633,9 @@ app.get('/deleteCountry/:id', (req, res) => {
     const sql = 'DELETE FROM country WHERE countryId = ?';
     connection.query(sql, [countryId], (error, results) => {
         if (error) {
-            // Handle any error that occurs during the database operation
             console.error("Error deleting country:", error);
             res.status(500).send('Error deleting country');
         } else {
-            // Send a success response
             res.redirect('/country');
         }
     });
@@ -640,8 +643,6 @@ app.get('/deleteCountry/:id', (req, res) => {
 
 app.post('/country/deleteCountry/:id', checkAuthenticated, (req, res) => {
   const countryId = req.params.id;
-
-  // Delete destinations related to the country (via lists)
   const deleteDestinationsSql = `
     DELETE d FROM destination d
     JOIN list l ON d.listId = l.listId
@@ -654,7 +655,7 @@ app.post('/country/deleteCountry/:id', checkAuthenticated, (req, res) => {
       return res.status(500).send('Error deleting destinations');
     }
 
-    // Delete lists related to the country
+    
     const deleteListsSql = `DELETE FROM list WHERE countryId = ?`;
     connection.query(deleteListsSql, [countryId], (err) => {
       if (err) {
@@ -662,7 +663,7 @@ app.post('/country/deleteCountry/:id', checkAuthenticated, (req, res) => {
         return res.status(500).send('Error deleting lists');
       }
 
-      // Finally delete the country itself
+     
       const deleteCountrySql = `DELETE FROM country WHERE countryId = ?`;
       connection.query(deleteCountrySql, [countryId], (err) => {
         if (err) {
@@ -670,7 +671,6 @@ app.post('/country/deleteCountry/:id', checkAuthenticated, (req, res) => {
           return res.status(500).send('Error deleting country');
         }
 
-        // Redirect back to the countries page after successful deletion
         res.redirect('/country');
       });
     });
@@ -688,7 +688,6 @@ app.get('/list/:listId/destinations/:destinationId/delete', (req, res) => {
       return res.status(500).send('Database error');
     }
 
-    // Redirect back to the same list
     res.redirect(`/list/${listId}/destinations`);
   });
 });
@@ -717,7 +716,7 @@ app.get('/country/:countryId/list/:listId/delete', (req, res) => {
       return res.status(500).send('Database error');
     }
 
-    // Redirect back to the same list
+    
     res.redirect(`/country/${countryId}/list`);
   });
 });
