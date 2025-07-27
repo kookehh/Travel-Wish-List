@@ -5,158 +5,163 @@ const flash = require('connect-flash');
 const multer = require('multer');
 const app = express();
 
-// prevent script tag or malicious code 
 function containsScriptTag(input) {
-    const pattern = /<\s*script.*?>.*?<\s*\/\s*script\s*>/gi;
-    return pattern.test(input);
+  const pattern = /<\s*script.*?>.*?<\s*\/\s*script\s*>/gi;
+  return pattern.test(input);
 }
 
 const disallowedChars = /[\"#$!*&%:]/;
 
-
 const storage = multer.diskStorage({
-    destination: (req, file, cb) => cb(null, 'public/images'),
-    filename: (req, file, cb) => cb(null, file.originalname)
+  destination: (req, file, cb) => cb(null, 'public/images'),
+  filename: (req, file, cb) => cb(null, file.originalname),
 });
-const upload = multer({ storage: storage });
+const upload = multer({ storage });
 
 const connection = mysql.createConnection({
-    host: 'zxw6ws.h.filess.io',
-    port: 3307,
-    user: 'C328TravelWishList_jetbackbuy',
-    password: '427766ceea97ead6c7975d85ac90ea584f82a776',
-    database: 'C328TravelWishList_jetbackbuy'
+  host: 'zxw6ws.h.filess.io',
+  port: 3307,
+  user: 'C328TravelWishList_jetbackbuy',
+  password: '427766ceea97ead6c7975d85ac90ea584f82a776',
+  database: 'C328TravelWishList_jetbackbuy',
 });
 connection.connect((err) => {
-    if (err) return console.error('MySQL error:', err);
-    console.log('Connected to MySQL database');
+  if (err) return console.error('MySQL connection error:', err);
+  console.log('Connected to MySQL');
 });
-
 
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
 app.use(express.urlencoded({ extended: false }));
-app.use(session({
+app.use(
+  session({
     secret: 'secret',
     resave: false,
     saveUninitialized: true,
-    cookie: { maxAge: 1000 * 60 * 60 * 24 * 7 }
-}));
+    cookie: { maxAge: 1000 * 60 * 60 * 24 * 7 },
+  })
+);
 app.use(flash());
 
-
 const checkAuthenticated = (req, res, next) => {
-    if (req.session.user) return next();
-    req.flash('error', 'Please log in to view this resource');
-    res.redirect('/login');
+  if (req.session.user) return next();
+  req.flash('error', 'Please log in to view this resource');
+  res.redirect('/login');
 };
 
 const checkAdmin = (req, res, next) => {
-    if (req.session.user.accounttype === 'admin') return next();
-    req.flash('error', 'Access denied');
-    res.redirect('/');
+  if (req.session.user.accounttype === 'admin') return next();
+  req.flash('error', 'Access denied');
+  res.redirect('/');
 };
 
-
+// ✅ Registration validation
 const validateRegistration = (req, res, next) => {
-    let { username, email, password, contact, accounttype } = req.body;
+  let { username, email, password, contact, accounttype } = req.body;
 
-    username = username.trim();
-    email = email.trim();
-    contact = contact.trim();
-    accounttype = accounttype.trim();
+  username = username.trim();
+  email = email.trim();
+  contact = contact.trim();
+  accounttype = accounttype.trim();
 
+  if (!username || !email || !password || !contact || !accounttype) {
+    req.flash('error', 'All fields are required.');
+    req.flash('formData', req.body);
+    return res.redirect('/register');
+  }
 
-    if (!username || !email || !password || !contact || !accounttype) {
-        req.flash('error', 'All fields are required.');
-        req.flash('formData', req.body);
-        return res.redirect('/register');
-    }
+  if ([username, email, contact, accounttype, password].some(containsScriptTag)) {
+    req.flash('error', 'Invalid input: script tags are not allowed.');
+    req.flash('formData', req.body);
+    return res.redirect('/register');
+  }
 
-    // Check for script injection
-    const inputs = [username, email, password, contact, accounttype];
-    if (inputs.some(containsScriptTag)) {
-        req.flash('error', 'Invalid input: script tags not allowed.');
-        req.flash('formData', req.body);
-        return res.redirect('/register');
-    }
+  const checkFields = [username, email, contact, accounttype];
+  if (checkFields.some((field) => disallowedChars.test(field))) {
+    req.flash('error', 'Special characters like " # $ ! * & % : are not allowed.');
+    req.flash('formData', req.body);
+    return res.redirect('/register');
+  }
 
-    const filteredFields = [username, email, contact, accounttype];
-    if (filteredFields.some(field => disallowedChars.test(field))) {
-        req.flash('error', 'Special characters like " # $ ! * & % : are not allowed.');
-        req.flash('formData', req.body);
-        return res.redirect('/register');
-    }
+  if (password.length < 6) {
+    req.flash('error', 'Password must be at least 6 characters long.');
+    req.flash('formData', req.body);
+    return res.redirect('/register');
+  }
 
-
-    if (password.length < 6) {
-        req.flash('error', 'Password must be at least 6 characters long.');
-        req.flash('formData', req.body);
-        return res.redirect('/register');
-    }
-
-    next();
+  next();
 };
-
 
 app.get('/', (req, res) => {
-    res.render('index', { user: req.session.user });
+  res.render('index', { user: req.session.user });
 });
 
 app.get('/register', (req, res) => {
-    res.render('register', {
-        messages: req.flash('error'),
-        formData: req.flash('formData')[0]
-    });
+  res.render('register', {
+    messages: req.flash('error'),
+    formData: req.flash('formData')[0],
+  });
 });
 
 app.post('/register', validateRegistration, (req, res) => {
-    const { username, email, password, contact, accounttype } = req.body;
-    const sql = 'INSERT INTO users (username, email, password, contact, accounttype) VALUES (?, ?, SHA1(?), ?, ?)';
-    connection.query(sql, [username, email, password, contact, accounttype], (err) => {
-        if (err) throw err;
-        req.flash('success', 'Registration successful. Please login.');
-        res.redirect('/login');
-    });
+  const { username, email, password, contact, accounttype } = req.body;
+  const sql =
+    'INSERT INTO users (username, email, password, contact, accounttype) VALUES (?, ?, SHA1(?), ?, ?)';
+  connection.query(
+    sql,
+    [username, email, password, contact, accounttype],
+    (err) => {
+      if (err) throw err;
+      req.flash('success', 'Registration successful. Please login.');
+      res.redirect('/login');
+    }
+  );
 });
 
 app.get('/login', (req, res) => {
-    res.render('login', {
-        messages: req.flash('success'),
-        errors: req.flash('error')
-    });
+  res.render('login', {
+    messages: {
+      success: req.flash('success'),
+      error: req.flash('error'),
+    },
+  });
 });
 
+// ✅ Login validation
 app.post('/login', (req, res) => {
-    const { email, password } = req.body;
+  let { email, password } = req.body;
+  email = email.trim();
+  password = password.trim();
 
-    if (!email || !password) {
-        req.flash('error', 'All fields are required.');
-        return res.redirect('/login');
+  if (!email || !password) {
+    req.flash('error', 'All fields are required.');
+    return res.redirect('/login');
+  }
+
+  if (disallowedChars.test(email)) {
+    req.flash('error', 'Email contains disallowed characters.');
+    return res.redirect('/login');
+  }
+
+  const sql = 'SELECT * FROM users WHERE email = ? AND password = SHA1(?)';
+  connection.query(sql, [email, password], (err, results) => {
+    if (err) {
+      console.error('Login error:', err);
+      req.flash('error', 'Something went wrong.');
+      return res.redirect('/login');
     }
 
-    if (containsScriptTag(email) || containsScriptTag(password)) {
-        req.flash('error', 'Invalid input detected.');
-        return res.redirect('/login');
+    if (results.length > 0) {
+      req.session.user = results[0];
+      return res.redirect('/country');
+    } else {
+      req.flash('error', 'Invalid email or password.');
+      return res.redirect('/login');
     }
-
-    const sql = 'SELECT * FROM users WHERE email = ? AND password = SHA1(?)';
-    connection.query(sql, [email, password], (err, results) => {
-        if (err) {
-            console.error('Login error:', err);
-            req.flash('error', 'Something went wrong.');
-            return res.redirect('/login');
-        }
-
-        if (results.length > 0) {
-            req.session.user = results[0];
-            return res.redirect('/country');
-        } else {
-            req.flash('error', 'Invalid email or password.');
-            return res.redirect('/login');
-        }
-    });
+  });
 });
+
+
 app.get('/country', checkAuthenticated, (req, res) => {
     connection.query('SELECT * FROM country', (error, results) => {
         if (error) throw error;
