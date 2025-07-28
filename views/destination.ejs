@@ -165,11 +165,13 @@
               <div class="card-body d-flex flex-column">
                 <h5 class="card-title"><%= dest.destinationName %></h5>
                 <p class="card-text"><strong>Price:</strong> $<%= dest.price.toFixed(2) %></p>
-
-                <form action="/wishlist/<%= dest.destinationId %>" method="POST" class="mt-auto">
-                  <input type="hidden" name="destinationName" value="1" />
-                  <button type="submit" class="btn btn-primary w-100">Add to Wishlist</button>
-                </form>
+                
+                <% if (user && user.accounttype === 'user') { %>
+                  <form action="/wishlist/<%= dest.destinationId %>" method="POST" class="mt-auto">
+                    <input type="hidden" name="destinationName" value="1" />
+                    <button type="submit" class="btn btn-primary w-100">Add to Wishlist</button>
+                  </form>
+                <% } %>
 
                 <a href="/destination/<%= dest.destinationId %>/event" class="btn btn-info w-100 mt-2">View Details</a>
 
