@@ -323,30 +323,40 @@ app.post('/wishlist/:id', checkAuthenticated, (req, res) => {
 });
 
 app.get('/wishlist', checkAuthenticated, (req, res) => {
-    const userId = req.session.user.id;
+  const userId = req.session.user.id;
 
-    const sql = `
-        SELECT wishlist.*, destination.destinationName, destination.price, destination.image,
-        profile.image AS profileImage, profile.bio
-        FROM wishlist 
-        JOIN destination ON wishlist.destinationId = destination.destinationId
-        JOIN profile ON wishlist.Id = profile.userId
-        WHERE wishlist.id = ?
-    `;
-    
-    connection.query(sql, [userId], (err, results) => {
-        if (err) {
-            console.error("Database error when fetching wishlist:", err);
-            return res.status(500).send("Error loading wishlist");
-        }
+  const profileQuery = 'SELECT * FROM profile WHERE userId = ?';
+  const wishlistQuery = `
+    SELECT wishlist.*, destination.destinationName, destination.price, destination.image
+    FROM wishlist 
+    JOIN destination ON wishlist.destinationId = destination.destinationId
+    WHERE wishlist.id = ?
+  `;
 
-        res.render('wishlist', {
-            wishlist: results,
-            user: req.session.user,
-            profileImage: results.length > 0 ? results[0].profileImage : null,
-            bio: results.length > 0 ? results[0].bio : null
-        });
+  connection.query(profileQuery, [userId], (err, profileResults) => {
+    if (err) {
+      console.error('Error fetching profile:', err);
+      return res.status(500).send('Error loading profile');
+    }
+
+    const profile = profileResults.length > 0 ? profileResults[0] : {};
+    const profileImage = profile.image || 'default.png';
+    const bio = profile.bio || '';
+
+    connection.query(wishlistQuery, [userId], (err, wishlistResults) => {
+      if (err) {
+        console.error('Error fetching wishlist:', err);
+        return res.status(500).send('Error loading wishlist');
+      }
+
+      res.render('wishlist', {
+        user: req.session.user,
+        wishlist: wishlistResults,
+        profileImage,
+        bio
+      });
     });
+  });
 });
 
 app.get('/logout', (req, res) => {
