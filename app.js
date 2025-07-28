@@ -753,14 +753,49 @@ app.post('/list/delete/:id', checkAuthenticated, (req, res) => {
     });
 });
 
+
 app.get('/search', (req, res) => {
-  const searchTerm = req.query.q;
-  const sql = "SELECT * FROM country WHERE countryName LIKE ?";
-  connection.query(sql, [`%${searchTerm}%`], (err, results) => {
-    if (err) throw err;
-    res.render('search', { results, user: req.session.user, searchTerm });
+  const searchTerm = `%${req.query.q}%`;
+
+  const countrySQL = `
+    SELECT * 
+    FROM country 
+    WHERE countryName LIKE ?`;
+  
+  const listSQL = `
+    SELECT l.*, c.countryName
+    FROM list l
+    JOIN country c ON l.countryId = c.countryId
+    WHERE l.listName LIKE ?`;
+
+  const destinationSQL = `
+    SELECT d.*, c.countryName, l.listName
+    FROM destination d
+    JOIN list l ON d.listId = l.listId
+    JOIN country c ON l.countryId = c.countryId
+    WHERE d.destinationName LIKE ?`;
+
+  connection.query(countrySQL, [searchTerm], (err, countryRows) => {
+    if (err) return res.status(500).send('Country search failed');
+
+    connection.query(listSQL, [searchTerm], (err, listRows) => {
+      if (err) return res.status(500).send('List search failed');
+
+      connection.query(destinationSQL, [searchTerm], (err, destRows) => {
+        if (err) return res.status(500).send('Destination search failed');
+
+        res.render('search', {
+          user: req.session.user,
+          searchTerm: req.query.q,
+          countries: countryRows,
+          lists: listRows,
+          destinations: destRows
+        });
+      });
+    });
   });
 });
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
