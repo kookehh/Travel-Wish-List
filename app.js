@@ -796,6 +796,20 @@ app.get('/search', (req, res) => {
   });
 });
 
+app.get('/dashboard', checkAuthenticated, checkAdmin, (req, res) => {
+  const sql = `
+    SELECT id, username, email, contact, accounttype FROM users;
+  `;
+
+  connection.query(sql, (err, results) => {
+    if (err) return res.status(500).send('Error fetching dashboard data');
+
+    res.render('dashboard', {
+      user: req.session.user,
+      data: results
+    });
+  });
+});
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

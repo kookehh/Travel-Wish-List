@@ -130,14 +130,19 @@
               <a class="nav-link" href="/wishlist">Profile</a>
             </li>
           <% } %>
-          <li class="nav-item">
-            <a class="nav-link" href="/logout">Logout</a>
-          </li>
           <% if (user && user.accounttype === 'admin') { %>
             <li class="nav-item">
               <a class="nav-link" href="/addCountry">Add Country</a>
             </li>
           <% } %>
+          <% if (user && user.accounttype === 'admin') { %>
+            <li class="nav-item">
+              <a class="nav-link" href="/dashboard">Dashboard</a>
+            </li>
+          <% } %>
+          <li class="nav-item">
+            <a class="nav-link" href="/logout">Logout</a>
+          </li>
         </ul>
       </div>
     </div>
