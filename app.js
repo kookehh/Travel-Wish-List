@@ -811,5 +811,37 @@ app.get('/dashboard', checkAuthenticated, checkAdmin, (req, res) => {
   });
 });
 
+app.post('/dashboard/delete/:id', checkAuthenticated, checkAdmin, (req, res) => {
+  const id = parseInt(req.params.id);
+
+  if (isNaN(id)) return res.status(400).send('Invalid user ID');
+  if (req.session.user.id === id) return res.status(400).send("You can't delete yourself.");
+
+  const deleteWishlistSql = 'DELETE FROM wishlist WHERE id = ?';
+  connection.query(deleteWishlistSql, [id], (err) => {
+    if (err) {
+      console.error("Error deleting wishlist:", err.sqlMessage);
+      return res.status(500).send('Error deleting wishlist items');
+    }
+
+    const deleteProfileSql = 'DELETE FROM profile WHERE userId = ?';
+    connection.query(deleteProfileSql, [id], (err) => {
+      if (err) {
+        console.error("Error deleting profile:", err.sqlMessage);
+        return res.status(500).send('Error deleting profile');
+      }
+
+      const deleteUserSql = 'DELETE FROM users WHERE id = ?';
+      connection.query(deleteUserSql, [id], (err) => {
+        if (err) {
+          console.error("Error deleting user:", err.sqlMessage);
+          return res.status(500).send('Error deleting user');
+        }
+        res.redirect('/dashboard');
+      });
+    });
+  });
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

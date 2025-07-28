@@ -119,7 +119,7 @@
 <body>
   <nav class="navbar navbar-expand-sm navbar-dark bg-dark fixed-top">
     <div class="container-fluid">
-      <a class="navbar-brand" href="/country">Travel Wishlist</a>
+      <a class="navbar-brand" href="/country">Jet2Go</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#collapsibleNavbar">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -134,9 +134,7 @@
             <li class="nav-item">
               <a class="nav-link" href="/addCountry">Add Country</a>
             </li>
-          <% } %>
-          <% if (user && user.accounttype === 'admin') { %>
-            <li class="nav-item">
+            <li>
               <a class="nav-link" href="/dashboard">Dashboard</a>
             </li>
           <% } %>
