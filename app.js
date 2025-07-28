@@ -55,7 +55,6 @@ const checkAdmin = (req, res, next) => {
   res.redirect('/');
 };
 
-// ✅ Registration validation
 const validateRegistration = (req, res, next) => {
   let { username, email, password, contact, accounttype } = req.body;
 
@@ -127,7 +126,6 @@ app.get('/login', (req, res) => {
   });
 });
 
-// ✅ Login validation
 app.post('/login', (req, res) => {
   let { email, password } = req.body;
   email = email.trim();
@@ -160,7 +158,6 @@ app.post('/login', (req, res) => {
     }
   });
 });
-
 
 app.get('/country', checkAuthenticated, (req, res) => {
     connection.query('SELECT * FROM country', (error, results) => {
@@ -364,7 +361,6 @@ app.get('/logout', (req, res) => {
     res.redirect('/');
 });
 
-
 app.get('/destination/:id', checkAuthenticated, (req, res) => {
   const listId = req.params.id;
 
@@ -473,7 +469,6 @@ app.post('/updateCountry/:id', upload.single('image'), (req, res) => {
     });
 });
 
-
 app.get('/country/:id/addList', checkAuthenticated, (req, res) => {
     const countryId = req.params.id;
     const sql = 'SELECT * FROM country WHERE countryId = ?';
@@ -508,7 +503,6 @@ app.post('/country/:id/list/addList', upload.single('image'), (req, res) => {
     res.redirect(`/country/${countryId}/list`);
   });
 });
-
 
 app.get('/updateList/:id',checkAuthenticated, checkAdmin, (req,res) => {
     const listId = req.params.id;
@@ -752,7 +746,6 @@ app.post('/list/delete/:id', checkAuthenticated, (req, res) => {
         });
     });
 });
-
 
 app.get('/search', (req, res) => {
   const searchTerm = `%${req.query.q}%`;
