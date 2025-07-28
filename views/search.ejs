@@ -13,73 +13,68 @@
       min-height: 100vh;
       padding-top: 80px;
     }
-
     .navbar-dark-blue {
       background-color: #001f3f !important;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
-
     .navbar-brand, .nav-link {
-      color: #ffffff !important;
+      color: #fff !important;
       font-weight: 600;
     }
-
     .nav-link:hover {
       text-decoration: underline;
     }
-
     h2 {
       font-weight: 700;
       color: #1d3557;
       margin-bottom: 2rem;
+      text-align: center;
     }
-
+    .section-title {
+      font-weight: 600;
+      color: #023e8a;
+      margin: 2.5rem 0 1rem;
+      text-align: center;
+    }
     .card {
       border: none;
       border-radius: 1rem;
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.08);
       transition: transform 0.2s ease, box-shadow 0.2s ease;
-      background: #ffffff;
+      background: #fff;
     }
-
     .card:hover {
       transform: translateY(-5px);
-      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+      box-shadow: 0 12px 28px rgba(0,0,0,0.12);
     }
-
     .card-img-top {
       height: 200px;
       object-fit: cover;
       border-top-left-radius: 1rem;
       border-top-right-radius: 1rem;
     }
-
     .card-title {
       font-weight: 600;
       color: #0077b6;
     }
-
     .btn-travel {
-      background: linear-gradient(135deg, #48cae4, #00b4d8);
-      color: white;
+      background: linear-gradient(135deg,#48cae4,#00b4d8);
+      color: #fff;
       border-radius: 10px;
-      padding: 0.5rem 1rem;
+      padding: .5rem 1rem;
       border: none;
-      transition: background 0.3s ease;
+      transition: background .3s ease;
     }
-
     .btn-travel:hover {
       background: #0077b6;
     }
-
     .btn-back {
       background-color: #023e8a;
       color: #fff;
       margin-top: 1rem;
       border-radius: 8px;
-      padding: 0.5rem 1rem;
+      padding: .5rem 1rem;
     }
-
     .btn-back:hover {
       background-color: #001f3f;
     }
@@ -96,17 +91,11 @@
       <div class="collapse navbar-collapse" id="collapsibleNavbar">
         <ul class="navbar-nav ms-auto">
           <% if (user && user.accounttype === 'user') { %>
-            <li class="nav-item">
-              <a class="nav-link" href="/wishlist">Profile</a>
-            </li>
+            <li class="nav-item"><a class="nav-link" href="/wishlist">Profile</a></li>
           <% } %>
-          <li class="nav-item">
-            <a class="nav-link" href="/logout">Logout</a>
-          </li>
+          <li class="nav-item"><a class="nav-link" href="/logout">Logout</a></li>
           <% if (user && user.accounttype === 'admin') { %>
-            <li class="nav-item">
-              <a class="nav-link" href="/addCountry">Add Country</a>
-            </li>
+            <li class="nav-item"><a class="nav-link" href="/addCountry">Add Country</a></li>
           <% } %>
         </ul>
       </div>
@@ -114,26 +103,73 @@
   </nav>
 
   <div class="container mt-5">
-    <h2 class="text-center">Search Results</h2>
-    <% if (results.length > 0) { %>
+    <h2>Search Results for "<%= searchTerm %>"</h2>
+
+    <% if (!countries.length && !lists.length && !destinations.length) { %>
+      <div class="alert alert-warning text-center">
+        No results found for "<strong><%= searchTerm %></strong>".
+      </div>
+    <% } %>
+
+    <% if (countries.length) { %>
+      <h4 class="section-title">Matching Countries</h4>
       <div class="row">
-        <% results.forEach(result => { %>
+        <% countries.forEach(c => { %>
           <div class="col-md-4 mb-4">
             <div class="card h-100">
-              <img src="/images/<%= result.image %>" class="card-img-top" alt="<%= result.countryName %>">
-              <div class="card-body d-flex flex-column">
-                <h5 class="card-title"><%= result.countryName %></h5>
-                <a href="/country/<%= result.countryId %>/list" class="btn btn-travel mt-auto">View Lists</a>
+              <img src="/images/<%= c.image %>" alt="<%= c.countryName %>" class="card-img-top">
+              <div class="card-body d-flex flex-column text-center">
+                <h5 class="card-title"><%= c.countryName %></h5>
+                <a href="/country/<%= c.countryId %>/list" class="btn btn-travel mt-auto">View Lists</a>
               </div>
             </div>
           </div>
         <% }) %>
       </div>
-    <% } else { %>
-      <div class="alert alert-warning text-center">No results found for "<strong><%= searchTerm %></strong>".</div>
     <% } %>
+
+    <% if (lists.length) { %>
+      <h4 class="section-title">Matching Lists</h4>
+      <div class="row">
+        <% lists.forEach(l => { %>
+          <div class="col-md-4 mb-4">
+            <div class="card h-100">
+              <img src="/images/<%= l.image %>" alt="<%= l.listName %>" class="card-img-top">
+              <div class="card-body d-flex flex-column text-center">
+                <h5 class="card-title"><%= l.listName %></h5>
+                <p class="text-muted">in <%= l.countryName %></p>
+                <a href="/list/<%= l.listId %>/destinations" class="btn btn-travel mt-auto">
+                  View Destinations
+                </a>
+              </div>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    <% } %>
+
+    <% if (destinations.length) { %>
+      <h4 class="section-title">Matching Destinations</h4>
+      <div class="row">
+        <% destinations.forEach(d => { %>
+          <div class="col-md-4 mb-4">
+            <div class="card h-100">
+              <img src="/images/<%= d.image %>" alt="<%= d.destinationName %>" class="card-img-top">
+              <div class="card-body d-flex flex-column text-center">
+                <h5 class="card-title"><%= d.destinationName %></h5>
+                <p class="text-muted mb-2">
+                  in <%= d.countryName %> → <%= d.listName %>
+                </p>
+                <p>$<%= d.price.toFixed(2) %></p>
+              </div>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    <% } %>
+
     <div class="text-center">
-      <a href="/country" class="btn btn-back">Back to Countries</a>
+      <a href="/country" class="btn btn-back">← Back to Countries</a>
     </div>
   </div>
 
