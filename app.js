@@ -656,8 +656,8 @@ app.post('/country/deleteCountry/:id', checkAuthenticated, (req, res) => {
 
   connection.query(deleteDestinationsSql, [countryId], (err) => {
     if (err) {
-      console.error("Error deleting destinations:", err);
-      return res.status(500).send('Error deleting destinations');
+      console.error("Error deleting country:", err);
+      return res.status(500).send('Error deleting countries');
     }
 
     
@@ -690,7 +690,7 @@ app.get('/list/:listId/destinations/:destinationId/delete', (req, res) => {
   connection.query(sql, [destinationId], (err, result) => {
     if (err) {
       console.error('Error deleting destination:', err);
-      return res.status(500).send('Database error');
+      return res.status(500).send('Database error' + err.message);
     }
 
     res.redirect(`/list/${listId}/destinations`);
